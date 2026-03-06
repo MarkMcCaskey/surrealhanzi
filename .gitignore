@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Data files (downloaded separately)
+data/graphics.txt
+data/dictionary.txt

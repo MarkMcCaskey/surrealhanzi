@@ -1,0 +1,12 @@
+[project]
+name = "surrealhanzi"
+version = "0.1.0"
+description = "Render Chinese characters from IDS (Ideographic Description Sequences) to SVG"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+download = ["requests"]
+
+[project.scripts]
+surrealhanzi = "surrealhanzi.cli:main"
