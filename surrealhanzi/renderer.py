@@ -313,10 +313,75 @@ def _svg_document(content: str, size: int) -> str:
 
 
 class Renderer:
-    """Renders IDS trees to SVG with proper radical integration."""
+    """Renders IDS trees to SVG with proper radical integration.
+
+    Two rendering strategies:
+    1. **Donor-based**: For IDS patterns that match a known character,
+       extract pre-drawn component strokes using the matches field.
+       These strokes are already optimized for their compositional context.
+    2. **Algorithmic**: For novel/surreal patterns with no donor character,
+       compose standalone component glyphs using data-driven proportions.
+    """
 
     def __init__(self, glyph_data: GlyphData) -> None:
         self.glyph_data = glyph_data
+        self._decomp_index: Optional[dict[str, list[str]]] = None
+
+    def _get_decomp_index(self) -> dict[str, list[str]]:
+        """Build reverse index: IDS decomposition string -> list of characters."""
+        if self._decomp_index is None:
+            self._decomp_index = {}
+            for char in self.glyph_data._strokes:
+                decomp = self.glyph_data.get_decomposition(char)
+                if decomp:
+                    self._decomp_index.setdefault(decomp, []).append(char)
+        return self._decomp_index
+
+    def _find_donor(self, ids_string: str) -> Optional[str]:
+        """Find a known character that matches an IDS decomposition.
+
+        Returns a character with stroke data and matches, or None.
+        """
+        index = self._get_decomp_index()
+        candidates = index.get(ids_string, [])
+        for char in candidates:
+            if (self.glyph_data.get_strokes(char) is not None
+                    and self.glyph_data.get_matches(char) is not None):
+                return char
+        return None
+
+    def _render_via_donor(self, donor_char: str, tree: IDSNode, bbox: BBox) -> Optional[str]:
+        """Render using pre-drawn component strokes from a donor character.
+
+        Extracts strokes for each top-level component using the matches field,
+        then renders them in the target bbox with full-canvas mapping.
+        """
+        all_strokes = self.glyph_data.get_strokes(donor_char)
+        matches = self.glyph_data.get_matches(donor_char)
+        if all_strokes is None or matches is None:
+            return None
+
+        # Verify the tree has the expected structure
+        if tree.is_leaf:
+            return None
+
+        # Group strokes by top-level component index
+        component_groups: dict[int, list[str]] = {}
+        for i, match in enumerate(matches):
+            if match is not None and len(match) > 0 and i < len(all_strokes):
+                comp_idx = match[0]
+                component_groups.setdefault(comp_idx, []).append(all_strokes[i])
+
+        # Each component gets rendered with full-canvas mapping
+        # (strokes are already at correct positions within 1024x1024)
+        parts = []
+        for comp_idx in sorted(component_groups.keys()):
+            strokes = component_groups[comp_idx]
+            parts.append(_render_strokes_fullcanvas(strokes, bbox))
+
+        if not parts:
+            return None
+        return "\n".join(parts)
 
     def _resolve_variant(self, node: IDSNode, operator: str, child_index: int) -> IDSNode:
         """Apply radical variant mapping to a leaf node."""
@@ -339,9 +404,18 @@ class Renderer:
             else:
                 return _render_placeholder(char, bbox)
 
+        # Try donor-based rendering: find a known character with this exact
+        # IDS decomposition and use its pre-drawn component strokes
+        ids_str = node.to_ids()
+        donor = self._find_donor(ids_str)
+        if donor:
+            result = self._render_via_donor(donor, node, bbox)
+            if result is not None:
+                return result
+
+        # Fall back to algorithmic composition
         parts = []
         for i, child in enumerate(node.children):
-            # Apply radical variant mapping
             resolved = self._resolve_variant(child, node.operator, i)
             child_bbox = _subdivide(bbox, node.operator, i, len(node.children))
             parts.append(self._render_node(resolved, child_bbox, node.operator, i))
