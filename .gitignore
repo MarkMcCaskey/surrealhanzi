@@ -8,3 +8,6 @@ build/
 # Data files (downloaded separately)
 data/graphics.txt
 data/dictionary.txt
+
+# Trained models
+models/
