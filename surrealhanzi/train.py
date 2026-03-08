@@ -146,12 +146,31 @@ def train(
     _generate_samples(model, vocab, n=20, temperature=1.0, top_k=50)
 
 
+def _can_render(tree, glyph_data) -> bool:
+    """Check whether all leaf characters in a tree have renderable stroke data."""
+    if tree.is_leaf:
+        char = tree.character or ""
+        if glyph_data.get_strokes(char) is not None:
+            return True
+        # Try decomposition
+        decomp = glyph_data.get_decomposition(char)
+        if decomp:
+            try:
+                subtree = parse_ids(decomp)
+                return _can_render(subtree, glyph_data)
+            except IDSParseError:
+                pass
+        return False
+    return all(_can_render(c, glyph_data) for c in tree.children)
+
+
 def _generate_samples(
     model: IDSTransformer,
     vocab: IDSVocab,
     n: int = 10,
     temperature: float = 1.0,
     top_k: int = 50,
+    glyph_data=None,
 ) -> list[str]:
     """Generate and print novel IDS sequences."""
     model.eval()
@@ -174,9 +193,14 @@ def _generate_samples(
         # Validate: must parse as valid IDS
         try:
             tree = parse_ids(ids_str)
-            valid.append(ids_str)
         except IDSParseError:
             continue
+
+        # If glyph_data provided, verify all leaves are renderable
+        if glyph_data is not None and not _can_render(tree, glyph_data):
+            continue
+
+        valid.append(ids_str)
 
     for i, ids_str in enumerate(valid):
         print(f"  {i+1:2d}. {ids_str}")
@@ -190,6 +214,7 @@ def generate(
     n: int = 10,
     temperature: float = 1.0,
     top_k: int = 50,
+    glyph_data=None,
 ) -> list[str]:
     """Load saved model and generate sequences."""
     save_path = os.path.join(MODEL_DIR, "ids_transformer.pt")
@@ -214,7 +239,10 @@ def generate(
     )
     model.load_state_dict(checkpoint["model_state"])
 
-    return _generate_samples(model, vocab, n=n, temperature=temperature, top_k=top_k)
+    return _generate_samples(
+        model, vocab, n=n, temperature=temperature, top_k=top_k,
+        glyph_data=glyph_data,
+    )
 
 
 def main() -> None:

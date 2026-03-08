@@ -90,16 +90,18 @@ def main() -> None:
         from .train import generate as gen_ids
         from .ids_parser import IDSParseError
 
+        glyph_data = GlyphData()
+        glyph_data.load()
+
         sequences = gen_ids(
             n=args.n,
             temperature=args.temperature,
             top_k=args.top_k,
+            glyph_data=glyph_data,
         )
 
         if args.output_dir and sequences:
             os.makedirs(args.output_dir, exist_ok=True)
-            glyph_data = GlyphData()
-            glyph_data.load()
             renderer = Renderer(glyph_data)
 
             for i, ids_str in enumerate(sequences):

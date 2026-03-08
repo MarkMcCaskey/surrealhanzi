@@ -33,11 +33,14 @@ SOURCE_Y_OFFSET = 900.0
 # Padding fraction within each component cell (prevents components touching edges)
 PADDING = 0.04
 
+# Minimum effective source dimension (fraction of SOURCE_W) when computing
+# scales for composed components.  Prevents small/simple radicals from being
+# enlarged so much that their strokes become visually heavier than neighbours.
+MIN_SOURCE_FRAC = 0.60
 
-# --- Radical variant mapping ---
+
+# --- Radical variant mapping (Traditional Chinese / zh-TW) ---
 # When a radical appears in certain positions, use its positional variant.
-# Key: (standalone_radical, position) -> variant_character
-# Positions: "left", "right", "top", "bottom", "inner", "outer"
 
 # Map from standalone form to positional variant
 LEFT_VARIANTS: dict[str, str] = {
@@ -45,9 +48,6 @@ LEFT_VARIANTS: dict[str, str] = {
     "犬": "犭", "示": "礻", "衣": "衤", "玉": "王",
     "食": "飠", "金": "釒", "火": "灬", "肉": "月",
     "足": "⻊", "糸": "糹", "骨": "⻣", "邑": "⻏",
-    # Simplified forms
-    "言": "讠", "貝": "贝", "車": "车", "門": "门",
-    "馬": "⻢", "魚": "⻥", "鳥": "⻦", "齒": "⻭",
 }
 
 BOTTOM_VARIANTS: dict[str, str] = {
@@ -237,12 +237,18 @@ def _subdivide(bbox: BBox, operator: str, child_index: int, num_children: int) -
     return BBox(x + child_index * cw, y, cw, h)
 
 
-def _render_strokes_tightfit(strokes: list[str], target: BBox) -> str:
+def _render_strokes_tightfit(strokes: list[str], target: BBox,
+                             clamp_weight: bool = False) -> str:
     """Render strokes with a tight-fit transform.
 
     Instead of mapping from the full 1024x1024 source space, compute the
     actual bounding box of the strokes and map from that, so strokes fill
     the target area properly with small padding.
+
+    When *clamp_weight* is True, the effective source dimensions are clamped
+    to at least MIN_SOURCE_FRAC of the canvas.  This prevents simple
+    components (few strokes, small bounds) from being enlarged so much that
+    their visual stroke weight dwarfs neighbouring components.
     """
     src_bbox = _stroke_bbox(strokes)
     if src_bbox is None:
@@ -262,10 +268,18 @@ def _render_strokes_tightfit(strokes: list[str], target: BBox) -> str:
     t = BBox(target.x + pad_x, target.y + pad_y,
              target.w - 2 * pad_x, target.h - 2 * pad_y)
 
-    # Uniform scale to preserve aspect ratio
-    scale = min(t.w / src_w, t.h / src_h)
+    if clamp_weight:
+        min_src = SOURCE_W * MIN_SOURCE_FRAC
+        eff_w = max(src_w, min_src)
+        eff_h = max(src_h, min_src)
+    else:
+        eff_w = src_w
+        eff_h = src_h
 
-    # Center within the padded target
+    # Uniform scale to preserve aspect ratio
+    scale = min(t.w / eff_w, t.h / eff_h)
+
+    # Center actual content within the padded target
     rendered_w = src_w * scale
     rendered_h = src_h * scale
     offset_x = t.x + (t.w - rendered_w) / 2
@@ -313,17 +327,14 @@ def _render_strokes_fullcanvas(strokes: list[str], bbox: BBox) -> str:
 
 
 def _render_placeholder(char: str, bbox: BBox) -> str:
-    """Render a placeholder for a missing glyph."""
+    """Render a subtle placeholder for a missing glyph (just the character)."""
     cx = bbox.x + bbox.w / 2
     cy = bbox.y + bbox.h / 2
     font_size = min(bbox.w, bbox.h) * 0.6
     return (
-        f'<rect x="{bbox.x:.1f}" y="{bbox.y:.1f}" '
-        f'width="{bbox.w:.1f}" height="{bbox.h:.1f}" '
-        f'fill="none" stroke="#ccc" stroke-width="1" stroke-dasharray="4,4" />\n'
         f'<text x="{cx:.1f}" y="{cy:.1f}" '
         f'text-anchor="middle" dominant-baseline="central" '
-        f'font-size="{font_size:.1f}" fill="#999">'
+        f'font-size="{font_size:.1f}" fill="currentColor">'
         f'{escape(char)}</text>'
     )
 
@@ -424,14 +435,24 @@ class Renderer:
             char = node.character or "?"
             strokes = self.glyph_data.get_strokes(char)
             if strokes:
-                # Standalone characters have built-in margins in their 1024x1024
-                # canvas.  When composing (parent_op set), use tight-fit so
-                # strokes fill their allocated box based on actual bounds.
+                # When composing (parent_op set), use tight-fit with weight
+                # clamping so strokes fill their box without becoming
+                # disproportionately heavy.
                 if parent_op is not None:
-                    return _render_strokes_tightfit(strokes, bbox)
+                    return _render_strokes_tightfit(strokes, bbox,
+                                                   clamp_weight=True)
                 return _render_strokes_fullcanvas(strokes, bbox)
-            else:
-                return _render_placeholder(char, bbox)
+
+            # No stroke data — try decomposition before giving up
+            decomp = self.glyph_data.get_decomposition(char)
+            if decomp:
+                try:
+                    subtree = parse_ids(decomp)
+                    return self._render_node(subtree, bbox, parent_op, child_idx)
+                except Exception:
+                    pass
+
+            return _render_placeholder(char, bbox)
 
         # Try donor-based rendering: find a known character with this exact
         # IDS decomposition and use its pre-drawn component strokes
