@@ -38,6 +38,12 @@ PADDING = 0.04
 # enlarged so much that their strokes become visually heavier than neighbours.
 MIN_SOURCE_FRAC = 0.60
 
+# How much non-uniform scaling (squishing) is allowed for composed components.
+# 0.0 = purely uniform, 1.0 = fully fill the box.  A small value gives mild
+# horizontal compression in ⿰ and vertical compression in ⿱, making
+# components look like parts of a character rather than standalone glyphs.
+SQUISH_BLEND = 0.35
+
 
 # --- Radical variant mapping (Traditional Chinese / zh-TW) ---
 # When a radical appears in certain positions, use its positional variant.
@@ -46,7 +52,7 @@ MIN_SOURCE_FRAC = 0.60
 LEFT_VARIANTS: dict[str, str] = {
     "人": "亻", "水": "氵", "手": "扌", "心": "忄",
     "犬": "犭", "示": "礻", "衣": "衤", "玉": "王",
-    "食": "飠", "金": "釒", "火": "灬", "肉": "月",
+    "食": "飠", "金": "釒", "肉": "月",
     "足": "⻊", "糸": "糹", "骨": "⻣", "邑": "⻏",
 }
 
@@ -238,17 +244,20 @@ def _subdivide(bbox: BBox, operator: str, child_index: int, num_children: int) -
 
 
 def _render_strokes_tightfit(strokes: list[str], target: BBox,
-                             clamp_weight: bool = False) -> str:
+                             clamp_weight: bool = False,
+                             squish: bool = False,
+                             align_x: float = 0.5,
+                             align_y: float = 0.5) -> str:
     """Render strokes with a tight-fit transform.
 
     Instead of mapping from the full 1024x1024 source space, compute the
-    actual bounding box of the strokes and map from that, so strokes fill
-    the target area properly with small padding.
+    actual bounding box of the strokes and map from that.
 
-    When *clamp_weight* is True, the effective source dimensions are clamped
-    to at least MIN_SOURCE_FRAC of the canvas.  This prevents simple
-    components (few strokes, small bounds) from being enlarged so much that
-    their visual stroke weight dwarfs neighbouring components.
+    *clamp_weight*: clamp effective source size to prevent over-enlargement.
+    *squish*: allow mild non-uniform scaling so components adapt to their box
+              shape (e.g., horizontally compressed in narrow ⿰ boxes).
+    *align_x*: horizontal alignment (0=left, 0.5=center, 1=right).
+    *align_y*: vertical alignment (0=top, 0.5=center, 1=bottom).
     """
     src_bbox = _stroke_bbox(strokes)
     if src_bbox is None:
@@ -259,7 +268,6 @@ def _render_strokes_tightfit(strokes: list[str], target: BBox,
     src_h = src_y2 - src_y
 
     if src_w < 1 or src_h < 1:
-        # Degenerate — fall back to full-canvas mapping
         return _render_strokes_fullcanvas(strokes, target)
 
     # Add padding to target
@@ -276,24 +284,33 @@ def _render_strokes_tightfit(strokes: list[str], target: BBox,
         eff_w = src_w
         eff_h = src_h
 
-    # Uniform scale to preserve aspect ratio
-    scale = min(t.w / eff_w, t.h / eff_h)
+    # Base uniform scale
+    uniform_scale = min(t.w / eff_w, t.h / eff_h)
 
-    # Center actual content within the padded target
-    rendered_w = src_w * scale
-    rendered_h = src_h * scale
-    offset_x = t.x + (t.w - rendered_w) / 2
-    offset_y = t.y + (t.h - rendered_h) / 2
+    if squish and SQUISH_BLEND > 0:
+        # Compute per-axis scales that would fill the box
+        fill_sx = t.w / src_w
+        fill_sy = t.h / src_h
+        # Blend between uniform and fill, capped by weight clamp
+        sx = uniform_scale * (1 - SQUISH_BLEND) + fill_sx * SQUISH_BLEND
+        sy = uniform_scale * (1 - SQUISH_BLEND) + fill_sy * SQUISH_BLEND
+        # Don't exceed the weight-clamped uniform scale by too much
+        if clamp_weight:
+            max_scale = uniform_scale * 1.4
+            sx = min(sx, max_scale)
+            sy = min(sy, max_scale)
+    else:
+        sx = sy = uniform_scale
 
-    # Transform chain (applied right-to-left):
-    # 1. Flip y: scale(1, -1)
-    # 2. Shift source bbox origin to (0,0): translate(-src_x, src_y2)
-    #    (after y-flip, src_y2 becomes the top)
-    # 3. Scale to target: scale(scale, scale)
-    # 4. Translate to target position: translate(offset_x, offset_y)
+    # Position content within the padded target using alignment
+    rendered_w = src_w * sx
+    rendered_h = src_h * sy
+    offset_x = t.x + (t.w - rendered_w) * align_x
+    offset_y = t.y + (t.h - rendered_h) * align_y
+
     transform = (
         f"translate({offset_x:.2f},{offset_y:.2f}) "
-        f"scale({scale:.6f},{scale:.6f}) "
+        f"scale({sx:.6f},{sy:.6f}) "
         f"translate({-src_x:.2f},{src_y2:.2f}) "
         f"scale(1,-1)"
     )
@@ -427,6 +444,27 @@ class Renderer:
             return IDSNode(character=variant)
         return node
 
+    @staticmethod
+    def _alignment_for(parent_op: Optional[str], child_idx: int) -> tuple[float, float]:
+        """Compute (align_x, align_y) so siblings lean toward each other."""
+        if parent_op == "\u2FF0":  # ⿰ left-right
+            return (1.0, 0.5) if child_idx == 0 else (0.0, 0.5)
+        if parent_op == "\u2FF1":  # ⿱ top-bottom
+            return (0.5, 1.0) if child_idx == 0 else (0.5, 0.0)
+        if parent_op == "\u2FF2":  # ⿲ left-mid-right
+            if child_idx == 0:
+                return (1.0, 0.5)
+            if child_idx == 2:
+                return (0.0, 0.5)
+            return (0.5, 0.5)
+        if parent_op == "\u2FF3":  # ⿳ top-mid-bottom
+            if child_idx == 0:
+                return (0.5, 1.0)
+            if child_idx == 2:
+                return (0.5, 0.0)
+            return (0.5, 0.5)
+        return (0.5, 0.5)
+
     def _render_node(self, node: IDSNode, bbox: BBox,
                      parent_op: Optional[str] = None,
                      child_idx: int = 0) -> str:
@@ -435,12 +473,13 @@ class Renderer:
             char = node.character or "?"
             strokes = self.glyph_data.get_strokes(char)
             if strokes:
-                # When composing (parent_op set), use tight-fit with weight
-                # clamping so strokes fill their box without becoming
-                # disproportionately heavy.
                 if parent_op is not None:
-                    return _render_strokes_tightfit(strokes, bbox,
-                                                   clamp_weight=True)
+                    ax, ay = self._alignment_for(parent_op, child_idx)
+                    return _render_strokes_tightfit(
+                        strokes, bbox,
+                        clamp_weight=True, squish=True,
+                        align_x=ax, align_y=ay,
+                    )
                 return _render_strokes_fullcanvas(strokes, bbox)
 
             # No stroke data — try decomposition before giving up
