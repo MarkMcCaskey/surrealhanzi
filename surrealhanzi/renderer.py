@@ -377,11 +377,13 @@ class Renderer:
                 return char
         return None
 
-    def _render_via_donor(self, donor_char: str, tree: IDSNode, bbox: BBox) -> Optional[str]:
+    def _render_via_donor(self, donor_char: str, tree: IDSNode, bbox: BBox,
+                          in_composition: bool = False) -> Optional[str]:
         """Render using pre-drawn component strokes from a donor character.
 
-        Extracts strokes for each top-level component using the matches field,
-        then renders them in the target bbox with full-canvas mapping.
+        Extracts strokes for each top-level component using the matches field.
+        When used at the root level, maps from the full 1024x1024 canvas.
+        When used inside a composition, uses tight-fit to fill the sub-bbox.
         """
         all_strokes = self.glyph_data.get_strokes(donor_char)
         matches = self.glyph_data.get_matches(donor_char)
@@ -392,23 +394,18 @@ class Renderer:
         if tree.is_leaf:
             return None
 
-        # Group strokes by top-level component index
-        component_groups: dict[int, list[str]] = {}
+        # Collect all matched strokes (preserving relative positioning)
+        collected: list[str] = []
         for i, match in enumerate(matches):
             if match is not None and len(match) > 0 and i < len(all_strokes):
-                comp_idx = match[0]
-                component_groups.setdefault(comp_idx, []).append(all_strokes[i])
+                collected.append(all_strokes[i])
 
-        # Each component gets rendered with full-canvas mapping
-        # (strokes are already at correct positions within 1024x1024)
-        parts = []
-        for comp_idx in sorted(component_groups.keys()):
-            strokes = component_groups[comp_idx]
-            parts.append(_render_strokes_fullcanvas(strokes, bbox))
-
-        if not parts:
+        if not collected:
             return None
-        return "\n".join(parts)
+
+        if in_composition:
+            return _render_strokes_tightfit(collected, bbox)
+        return _render_strokes_fullcanvas(collected, bbox)
 
     def _resolve_variant(self, node: IDSNode, operator: str, child_index: int) -> IDSNode:
         """Apply radical variant mapping to a leaf node."""
@@ -427,6 +424,11 @@ class Renderer:
             char = node.character or "?"
             strokes = self.glyph_data.get_strokes(char)
             if strokes:
+                # Standalone characters have built-in margins in their 1024x1024
+                # canvas.  When composing (parent_op set), use tight-fit so
+                # strokes fill their allocated box based on actual bounds.
+                if parent_op is not None:
+                    return _render_strokes_tightfit(strokes, bbox)
                 return _render_strokes_fullcanvas(strokes, bbox)
             else:
                 return _render_placeholder(char, bbox)
@@ -436,7 +438,9 @@ class Renderer:
         ids_str = node.to_ids()
         donor = self._find_donor(ids_str)
         if donor:
-            result = self._render_via_donor(donor, node, bbox)
+            result = self._render_via_donor(
+                donor, node, bbox, in_composition=parent_op is not None
+            )
             if result is not None:
                 return result
 
