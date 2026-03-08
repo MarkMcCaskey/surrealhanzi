@@ -1,9 +1,9 @@
-"""Minimal character-level autoregressive transformer for IDS generation.
+"""Character-level autoregressive transformer for IDS generation.
 
-Designed to be tiny and trainable on CPU in minutes:
-- ~9500 training sequences, median length 3, max ~12
-- Vocab ~1824 tokens (12 IDS operators + component characters)
-- 2 layers, 4 heads, dim 128 → ~1M parameters
+Trainable on CPU in minutes:
+- Up to ~96K training sequences from BabelStone IDS (or ~9.5K from MMAH)
+- Vocab ~10K+ tokens (17 IDS operators + component characters)
+- 4 layers, 4 heads, dim 192 → ~4M parameters
 """
 
 import math

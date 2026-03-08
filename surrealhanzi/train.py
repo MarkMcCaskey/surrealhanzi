@@ -18,11 +18,11 @@ MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file_
 
 
 def train(
-    d_model: int = 128,
+    d_model: int = 192,
     n_heads: int = 4,
-    n_layers: int = 2,
-    max_len: int = 16,
-    batch_size: int = 128,
+    n_layers: int = 4,
+    max_len: int = 32,
+    batch_size: int = 256,
     epochs: int = 50,
     lr: float = 3e-4,
     device: str = "cpu",
@@ -223,10 +223,10 @@ def main() -> None:
 
     train_p = sub.add_parser("train", help="Train the model")
     train_p.add_argument("--epochs", type=int, default=50)
-    train_p.add_argument("--d-model", type=int, default=128)
-    train_p.add_argument("--n-layers", type=int, default=2)
+    train_p.add_argument("--d-model", type=int, default=192)
+    train_p.add_argument("--n-layers", type=int, default=4)
     train_p.add_argument("--n-heads", type=int, default=4)
-    train_p.add_argument("--batch-size", type=int, default=128)
+    train_p.add_argument("--batch-size", type=int, default=256)
     train_p.add_argument("--lr", type=float, default=3e-4)
 
     gen_p = sub.add_parser("generate", help="Generate novel IDS sequences")

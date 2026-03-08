@@ -8,6 +8,7 @@ build/
 # Data files (downloaded separately)
 data/graphics.txt
 data/dictionary.txt
+data/ids_babelstone.txt
 
 # Trained models
 models/

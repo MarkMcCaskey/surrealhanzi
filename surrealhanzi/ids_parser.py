@@ -17,6 +17,12 @@ IDS_OPERATORS: dict[str, int] = {
     "\u2FF9": 2,  # ⿹ Surround from Upper Right
     "\u2FFA": 2,  # ⿺ Surround from Lower Left
     "\u2FFB": 2,  # ⿻ Overlaid
+    # Unicode 15.1+ additions
+    "\u2FFC": 2,  # ⿼ Surround from Right
+    "\u2FFD": 2,  # ⿽ Surround from Below-Right (horizontal reflection)
+    "\u2FFE": 1,  # ⿾ Mirror (unary, horizontal reflection)
+    "\u2FFF": 1,  # ⿿ Rotation (unary, 180° rotation)
+    "\u31EF": 2,  # ㇯ Subtraction (binary, remove second from first)
 }
 
 

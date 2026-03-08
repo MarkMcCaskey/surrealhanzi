@@ -43,9 +43,11 @@ PADDING = 0.04
 LEFT_VARIANTS: dict[str, str] = {
     "人": "亻", "水": "氵", "手": "扌", "心": "忄",
     "犬": "犭", "示": "礻", "衣": "衤", "玉": "王",
-    "食": "飠", "金": "釒",
+    "食": "飠", "金": "釒", "火": "灬", "肉": "月",
+    "足": "⻊", "糸": "糹", "骨": "⻣", "邑": "⻏",
     # Simplified forms
-    "言": "讠", "貝": "贝",
+    "言": "讠", "貝": "贝", "車": "车", "門": "门",
+    "馬": "⻢", "魚": "⻥", "鳥": "⻦", "齒": "⻭",
 }
 
 BOTTOM_VARIANTS: dict[str, str] = {
@@ -55,6 +57,7 @@ BOTTOM_VARIANTS: dict[str, str] = {
 
 RIGHT_VARIANTS: dict[str, str] = {
     "刀": "刂",
+    "邑": "⻏",
 }
 
 
@@ -204,6 +207,30 @@ def _subdivide(bbox: BBox, operator: str, child_index: int, num_children: int) -
 
     elif operator == "\u2FFB":  # ⿻ Overlaid
         return bbox
+
+    elif operator == "\u2FFC":  # ⿼ Surround from Right
+        if child_index == 0:
+            return bbox
+        return BBox(x + w * 0.05, y + h * 0.15,
+                    w * 0.62, h * 0.70)
+
+    elif operator == "\u2FFD":  # ⿽ Surround from Below-Right
+        if child_index == 0:
+            return bbox
+        return BBox(x + w * 0.05, y + h * 0.05,
+                    w * 0.62, h * 0.62)
+
+    elif operator == "\u2FFE":  # ⿾ Mirror (unary)
+        return bbox
+
+    elif operator == "\u2FFF":  # ⿿ Rotation (unary)
+        return bbox
+
+    elif operator == "\u31EF":  # ㇯ Subtraction
+        # Render only the first operand (the base); second is subtracted
+        if child_index == 0:
+            return bbox
+        return BBox(0, 0, 0, 0)  # hide the subtracted part
 
     # Fallback
     cw = w / num_children

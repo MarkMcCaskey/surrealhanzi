@@ -10,6 +10,7 @@ DATA_DIR = os.path.dirname(os.path.abspath(__file__))
 FILES = {
     "graphics.txt": "https://raw.githubusercontent.com/skishore/makemeahanzi/master/graphics.txt",
     "dictionary.txt": "https://raw.githubusercontent.com/skishore/makemeahanzi/master/dictionary.txt",
+    "ids_babelstone.txt": "https://www.babelstone.co.uk/CJK/IDS.TXT",
 }
 
 

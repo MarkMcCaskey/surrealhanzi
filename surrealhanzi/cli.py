@@ -29,10 +29,10 @@ def main() -> None:
     # Train command
     train_p = subparsers.add_parser("train", help="Train the IDS transformer")
     train_p.add_argument("--epochs", type=int, default=50)
-    train_p.add_argument("--d-model", type=int, default=128)
-    train_p.add_argument("--n-layers", type=int, default=2)
+    train_p.add_argument("--d-model", type=int, default=192)
+    train_p.add_argument("--n-layers", type=int, default=4)
     train_p.add_argument("--n-heads", type=int, default=4)
-    train_p.add_argument("--batch-size", type=int, default=128)
+    train_p.add_argument("--batch-size", type=int, default=256)
     train_p.add_argument("--lr", type=float, default=3e-4)
 
     # Generate command

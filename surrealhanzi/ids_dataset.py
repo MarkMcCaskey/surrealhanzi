@@ -76,7 +76,22 @@ class IDSVocab:
 
 
 def load_ids_sequences(path: Optional[str] = None) -> list[str]:
-    """Load all valid IDS decomposition strings from dictionary.txt."""
+    """Load IDS decomposition strings from the best available source.
+
+    Prefers BabelStone IDS (97K+ entries) over Make Me a Hanzi (9.5K entries).
+    Falls back to MMAH if BabelStone data is not present.
+    """
+    babelstone_path = os.path.join(DATA_DIR, "ids_babelstone.txt")
+    if os.path.exists(babelstone_path):
+        from .babelstone import load_babelstone_ids
+        return load_babelstone_ids(babelstone_path)
+
+    # Fallback to Make Me a Hanzi
+    return _load_mmah_sequences(path)
+
+
+def _load_mmah_sequences(path: Optional[str] = None) -> list[str]:
+    """Load IDS sequences from Make Me a Hanzi dictionary.txt."""
     path = path or os.path.join(DATA_DIR, "dictionary.txt")
     sequences = []
     with open(path, encoding="utf-8") as f:
@@ -94,7 +109,7 @@ def load_ids_sequences(path: Optional[str] = None) -> list[str]:
 def prepare_dataset(
     sequences: list[str],
     vocab: IDSVocab,
-    max_len: int = 16,
+    max_len: int = 32,
     train_frac: float = 0.9,
     seed: int = 42,
 ) -> tuple[list[list[int]], list[list[int]]]:
@@ -104,12 +119,18 @@ def prepare_dataset(
     padded token ID sequences.
     """
     encoded = []
+    skipped = 0
     for seq in sequences:
         ids = vocab.encode(seq)
         if len(ids) <= max_len:
             # Pad to max_len
             ids = ids + [vocab.pad_id] * (max_len - len(ids))
             encoded.append(ids)
+        else:
+            skipped += 1
+
+    if skipped > 0:
+        print(f"  Skipped {skipped} sequences exceeding max_len={max_len}")
 
     random.seed(seed)
     random.shuffle(encoded)
