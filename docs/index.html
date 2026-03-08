@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SurrealHanzi — Characters That Should Exist</title>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="#" class="site-title">SurrealHanzi</a>
+      <span class="site-subtitle">Characters that should exist</span>
+    </nav>
+  </header>
+  <main id="app"></main>
+  <footer>
+    <p>SurrealHanzi &mdash; a surrealist dictionary of imaginary Chinese characters</p>
+  </footer>
+<script>
+const $ = (tag, attrs, ...children) => {
+  const el = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'html') { el.innerHTML = v; continue; }
+    if (k.startsWith('on')) { el.addEventListener(k.slice(2), v); continue; }
+    el.setAttribute(k, v);
+  }
+  for (const c of children) {
+    if (typeof c === 'string') el.append(c);
+    else if (c) el.appendChild(c);
+  }
+  return el;
+};
+
+const app = document.getElementById('app');
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function etymologyToHtml(text) {
+  if (!text) return '';
+  return text.trim().split(/\n\s*\n/).filter(Boolean)
+    .map(p => `<p>${escapeHtml(p.trim())}</p>`).join('\n');
+}
+
+// --- Index view ---
+
+async function showIndex() {
+  document.title = 'SurrealHanzi \u2014 Characters That Should Exist';
+  const res = await fetch('manifest.json');
+  const manifest = await res.json();
+
+  app.innerHTML = '';
+  const intro = $('section', { class: 'intro' },
+    $('h1', null, 'A dictionary of characters that should exist'),
+    $('p', null,
+      'Chinese characters encode meaning through structure: radicals combine, ' +
+      'stack, and nest to form ideas. But what about the ideas that were never ' +
+      "written? SurrealHanzi is a collection of characters that don\u2019t exist\u2014but " +
+      'feel like they should.'
+    )
+  );
+  app.appendChild(intro);
+
+  const grid = $('section', { class: 'character-grid' });
+  for (const c of manifest) {
+    const card = $('a', { href: `#/${c.id}`, class: 'character-card' },
+      $('div', { class: 'card-ids-display' },
+        $('span', { class: 'card-ids-large' }, c.ids)
+      ),
+      $('div', { class: 'card-info' },
+        $('span', { class: 'card-ids' }, c.ids),
+        $('span', { class: 'card-title' }, c.title),
+        $('span', { class: 'card-meaning' }, c.meaning)
+      )
+    );
+    grid.appendChild(card);
+  }
+  app.appendChild(grid);
+}
+
+// --- Detail view ---
+
+async function showCharacter(id) {
+  app.innerHTML = '<p style="color:var(--text-muted);padding:2rem 0">Loading\u2026</p>';
+
+  const res = await fetch(`characters/${encodeURIComponent(id)}.json`);
+  if (!res.ok) {
+    app.innerHTML = '<p>Character not found.</p>';
+    return;
+  }
+  const c = await res.json();
+  document.title = `${c.title} (${c.ids}) \u2014 SurrealHanzi`;
+
+  app.innerHTML = '';
+  const article = $('article', { class: 'character-detail' });
+
+  // Back link
+  article.appendChild($('a', { href: '#', class: 'back-link' }, '\u2190 All characters'));
+
+  // Hero
+  const hero = $('div', { class: 'character-hero' });
+  hero.appendChild($('div', { class: 'hero-svg', html: c.svg }));
+
+  const info = $('div', { class: 'hero-info' });
+  info.appendChild($('h1', null, c.title));
+
+  const meta = $('div', { class: 'hero-meta' });
+  meta.appendChild($('span', { class: 'meta-ids', title: 'IDS decomposition' }, c.ids));
+  if (c.pronunciation) {
+    meta.appendChild($('span', { class: 'meta-pinyin' }, c.pronunciation));
+  }
+  info.appendChild(meta);
+
+  if (c.meaning) {
+    info.appendChild($('p', { class: 'hero-meaning' }, c.meaning));
+  }
+  hero.appendChild(info);
+  article.appendChild(hero);
+
+  // Etymology
+  if (c.etymology) {
+    const sec = $('section', { class: 'section' });
+    sec.appendChild($('h2', null, 'Etymology'));
+    sec.appendChild($('div', { class: 'etymology', html: etymologyToHtml(c.etymology) }));
+    article.appendChild(sec);
+  }
+
+  // Components
+  if (c.components && c.components.length) {
+    const sec = $('section', { class: 'section' });
+    sec.appendChild($('h2', null, 'Components'));
+    const wrap = $('div', { class: 'components' });
+    for (const comp of c.components) {
+      const el = $('div', { class: 'component' },
+        $('span', { class: 'component-char' }, comp.char),
+        $('span', { class: 'component-meaning' }, comp.meaning)
+      );
+      if (comp.role) el.appendChild($('span', { class: 'component-role' }, comp.role));
+      wrap.appendChild(el);
+    }
+    sec.appendChild(wrap);
+    article.appendChild(sec);
+  }
+
+  // Examples
+  if (c.examples && c.examples.length) {
+    const sec = $('section', { class: 'section' });
+    sec.appendChild($('h2', null, 'Examples'));
+    const wrap = $('div', { class: 'examples' });
+    for (const ex of c.examples) {
+      const el = $('div', { class: 'example' });
+      el.appendChild($('p', { class: 'example-text', lang: 'zh' }, ex.text));
+      if (ex.translation) {
+        el.appendChild($('p', { class: 'example-translation' }, ex.translation));
+      }
+      wrap.appendChild(el);
+    }
+    sec.appendChild(wrap);
+    article.appendChild(sec);
+  }
+
+  // Tags
+  if (c.tags && c.tags.length) {
+    const sec = $('section', { class: 'section' });
+    const wrap = $('div', { class: 'tags' });
+    for (const tag of c.tags) {
+      wrap.appendChild($('span', { class: 'tag' }, tag));
+    }
+    sec.appendChild(wrap);
+    article.appendChild(sec);
+  }
+
+  app.appendChild(article);
+}
+
+// --- Router ---
+
+function route() {
+  const hash = location.hash || '#';
+  const match = hash.match(/^#\/(.+)$/);
+  if (match) {
+    showCharacter(decodeURIComponent(match[1]));
+  } else {
+    showIndex();
+  }
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

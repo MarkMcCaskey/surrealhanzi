@@ -7,6 +7,10 @@ dependencies = []
 
 [project.optional-dependencies]
 download = ["requests"]
+site = ["pyyaml"]
+
+[tool.setuptools.packages.find]
+include = ["surrealhanzi*"]
 
 [project.scripts]
 surrealhanzi = "surrealhanzi.cli:main"

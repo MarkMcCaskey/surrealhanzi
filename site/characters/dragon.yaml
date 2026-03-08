@@ -1,0 +1,22 @@
+id: dragon
+ids: "⿱龍龍"
+svg: dragon.svg
+title: Double Dragon
+pronunciation: shuānglóng
+meaning: A dragon so vast it requires saying twice
+etymology: |
+  One dragon (龍) is already among the most complex characters in Chinese.
+  Stacking two vertically creates something beyond complexity—an absurdity
+  of ink, a character that insists on its own impossibility. If 龍 is a
+  dragon, then ⿱龍龍 is the idea of a dragon dreaming of itself.
+components:
+  - char: 龍
+    meaning: dragon
+    role: top
+  - char: 龍
+    meaning: dragon
+    role: bottom
+examples:
+  - text: 他画了一幅⿱龍龍的图，没人看得清。
+    translation: "He drew a picture of double-dragon. Nobody could make it out."
+tags: [mythical, recursive, absurd]

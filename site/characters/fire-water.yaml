@@ -1,0 +1,24 @@
+id: fire-water
+ids: "⿰火水"
+svg: fire_water.svg
+title: Fire-Water
+pronunciation: huǒshuǐ
+meaning: The tension between opposing elements held in balance
+etymology: |
+  What happens when fire meets water—not in collision, but in coexistence?
+  This character places 火 (fire) and 水 (water) side by side as equals,
+  neither consuming the other. It names the impossible equilibrium: a state
+  where contradictions don't resolve but simply persist, humming.
+components:
+  - char: 火
+    meaning: fire
+    role: left
+  - char: 水
+    meaning: water
+    role: right
+examples:
+  - text: 他的性格是一种⿰火水，热情与冷静并存。
+    translation: "His personality is a kind of fire-water—passion and calm coexisting."
+  - text: 这座城市的⿰火水让人又爱又恨。
+    translation: "The fire-water of this city makes you love and hate it at once."
+tags: [elements, paradox, duality]

@@ -43,6 +43,10 @@ def main() -> None:
     gen_p.add_argument("-o", "--output-dir", help="Output directory for SVGs")
     gen_p.add_argument("-s", "--size", type=int, default=256, help="SVG size in pixels")
 
+    # Site command
+    site_p = subparsers.add_parser("site", help="Build the static dictionary site")
+    site_p.add_argument("-o", "--output-dir", help="Output directory (default: docs/)")
+
     args = parser.parse_args()
 
     if args.command is None:
@@ -107,6 +111,11 @@ def main() -> None:
                     print(f"  Rendered {ids_str} -> {path}")
                 except Exception as e:
                     print(f"  Failed to render {ids_str}: {e}", file=sys.stderr)
+
+
+    elif args.command == "site":
+        from .site import build
+        build(output_dir=args.output_dir)
 
 
 if __name__ == "__main__":

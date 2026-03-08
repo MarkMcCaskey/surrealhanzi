@@ -1,0 +1,29 @@
+id: sun-moon-fire-water
+ids: "⿲⿱日月⿱火水"
+svg: surreal_sun_moon_fire_water.svg
+title: All Elements
+pronunciation: zhòu
+meaning: The totality of natural forces—cosmic and elemental—unified in a single glyph
+etymology: |
+  Sun above moon on the left (day over night, light over dark); fire above
+  water on the right (energy over stillness, destruction over renewal). This
+  character attempts to contain everything: the celestial and the terrestrial,
+  the bright and the dim, the consuming and the nurturing. It is, of course,
+  too much for one character to hold. That's the point.
+components:
+  - char: 日
+    meaning: sun
+    role: top-left
+  - char: 月
+    meaning: moon
+    role: bottom-left
+  - char: 火
+    meaning: fire
+    role: top-right
+  - char: 水
+    meaning: water
+    role: bottom-right
+examples:
+  - text: 宇宙的本质可以用一个⿲⿱日月⿱火水来概括。
+    translation: "The nature of the universe can be summed up in a single zhòu."
+tags: [elements, cosmic, maximal]
