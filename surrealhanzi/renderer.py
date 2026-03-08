@@ -31,12 +31,13 @@ SOURCE_H = 1024.0
 SOURCE_Y_OFFSET = 900.0
 
 # Padding fraction within each component cell (prevents components touching edges)
-PADDING = 0.04
+PADDING = 0.02
 
 # Minimum effective source dimension (fraction of SOURCE_W) when computing
 # scales for composed components.  Prevents small/simple radicals from being
 # enlarged so much that their strokes become visually heavier than neighbours.
-MIN_SOURCE_FRAC = 0.60
+# Kept moderate — too aggressive and deeply nested components get too small.
+MIN_SOURCE_FRAC = 0.40
 
 # How much non-uniform scaling (squishing) is allowed for composed components.
 # 0.0 = purely uniform, 1.0 = fully fill the box.  A small value gives mild
