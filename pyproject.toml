@@ -8,6 +8,7 @@ dependencies = []
 [project.optional-dependencies]
 download = ["requests"]
 site = ["pyyaml"]
+dictgen = ["anthropic", "pyyaml", "cairosvg"]
 
 [tool.setuptools.packages.find]
 include = ["surrealhanzi*"]

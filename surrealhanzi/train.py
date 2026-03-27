@@ -171,12 +171,13 @@ def _generate_samples(
     temperature: float = 1.0,
     top_k: int = 50,
     glyph_data=None,
+    filter_fn=None,
 ) -> list[str]:
     """Generate and print novel IDS sequences."""
     model.eval()
     valid = []
     attempts = 0
-    max_attempts = n * 10
+    max_attempts = n * 20 if filter_fn else n * 10
 
     while len(valid) < n and attempts < max_attempts:
         attempts += 1
@@ -200,6 +201,10 @@ def _generate_samples(
         if glyph_data is not None and not _can_render(tree, glyph_data):
             continue
 
+        # Apply custom filter (e.g. --with-radical)
+        if filter_fn is not None and not filter_fn(ids_str):
+            continue
+
         valid.append(ids_str)
 
     for i, ids_str in enumerate(valid):
@@ -215,6 +220,7 @@ def generate(
     temperature: float = 1.0,
     top_k: int = 50,
     glyph_data=None,
+    filter_fn=None,
 ) -> list[str]:
     """Load saved model and generate sequences."""
     save_path = os.path.join(MODEL_DIR, "ids_transformer.pt")
@@ -241,7 +247,7 @@ def generate(
 
     return _generate_samples(
         model, vocab, n=n, temperature=temperature, top_k=top_k,
-        glyph_data=glyph_data,
+        glyph_data=glyph_data, filter_fn=filter_fn,
     )
 
 
