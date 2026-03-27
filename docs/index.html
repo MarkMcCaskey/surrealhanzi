@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -40,10 +40,26 @@ function escapeHtml(s) {
   return d.innerHTML;
 }
 
-function etymologyToHtml(text) {
+function etymologyToHtml(text, ids, inlineSvg) {
   if (!text) return '';
   return text.trim().split(/\n\s*\n/).filter(Boolean)
-    .map(p => `<p>${escapeHtml(p.trim())}</p>`).join('\n');
+    .map(p => inlineChar(escapeHtml(p.trim()), ids, inlineSvg)).join('\n');
+}
+
+// Replace IDS string occurrences with an inline SVG glyph
+function makeInlineSvg(svg) {
+  // Strip width/height/style from the root SVG, keep viewBox
+  return svg
+    .replace(/\s+width="[^"]*"/, '')
+    .replace(/\s+height="[^"]*"/, '')
+    .replace(/\s+style="[^"]*"/, '')
+    .replace('<svg ', '<svg class="inline-char" ');
+}
+
+function inlineChar(html, ids, inlineSvg) {
+  if (!ids || !inlineSvg) return html;
+  const escaped = escapeHtml(ids);
+  return html.split(escaped).join(inlineSvg);
 }
 
 // --- Index view ---
@@ -67,16 +83,24 @@ async function showIndex() {
 
   const grid = $('section', { class: 'character-grid' });
   for (const c of manifest) {
-    const card = $('a', { href: `#/${c.id}`, class: 'character-card' },
-      $('div', { class: 'card-ids-display' },
-        $('span', { class: 'card-ids-large' }, c.ids)
-      ),
-      $('div', { class: 'card-info' },
-        $('span', { class: 'card-ids' }, c.ids),
-        $('span', { class: 'card-title' }, c.title),
-        $('span', { class: 'card-meaning' }, c.meaning)
-      )
-    );
+    const card = $('a', { href: `#/${c.id}`, class: 'character-card' });
+
+    const display = $('div', { class: 'card-svg-display' });
+    if (c.svg) {
+      display.innerHTML = c.svg;
+    } else {
+      display.appendChild($('span', { class: 'card-ids-large' }, c.ids));
+    }
+    card.appendChild(display);
+
+    card.appendChild($('div', { class: 'card-info' },
+      $('span', { class: 'card-title' }, c.title),
+      $('span', { class: 'card-ids' }, c.ids),
+      c.pronunciation
+        ? $('span', { class: 'card-pronunciation' }, c.pronunciation)
+        : null,
+      $('span', { class: 'card-meaning' }, c.meaning)
+    ));
     grid.appendChild(card);
   }
   app.appendChild(grid);
@@ -95,44 +119,118 @@ async function showCharacter(id) {
   const c = await res.json();
   document.title = `${c.title} (${c.ids}) \u2014 SurrealHanzi`;
 
+  // Build inline SVG for use in text
+  const isvg = c.svg ? makeInlineSvg(c.svg) : null;
+
   app.innerHTML = '';
-  const article = $('article', { class: 'character-detail' });
 
-  // Back link
-  article.appendChild($('a', { href: '#', class: 'back-link' }, '\u2190 All characters'));
+  // Dark hero header
+  const hero = $('div', { class: 'detail-hero' });
+  hero.appendChild($('a', { href: '#', class: 'back-link' }, '\u2190 All characters'));
 
-  // Hero
-  const hero = $('div', { class: 'character-hero' });
-  hero.appendChild($('div', { class: 'hero-svg', html: c.svg }));
+  const heroSvg = $('div', { class: 'hero-svg', html: c.svg });
+  hero.appendChild(heroSvg);
 
-  const info = $('div', { class: 'hero-info' });
-  info.appendChild($('h1', null, c.title));
-
-  const meta = $('div', { class: 'hero-meta' });
-  meta.appendChild($('span', { class: 'meta-ids', title: 'IDS decomposition' }, c.ids));
   if (c.pronunciation) {
-    meta.appendChild($('span', { class: 'meta-pinyin' }, c.pronunciation));
+    hero.appendChild($('div', { class: 'hero-pinyin' }, c.pronunciation));
   }
-  info.appendChild(meta);
+  if (c.bopomofo) {
+    hero.appendChild($('div', { class: 'hero-bopomofo' }, c.bopomofo));
+  }
+  app.appendChild(hero);
 
+  // Body card
+  const body = $('div', { class: 'detail-body' });
+
+  // Title + meaning
+  body.appendChild($('h1', { class: 'detail-title' }, c.title));
   if (c.meaning) {
-    info.appendChild($('p', { class: 'hero-meaning' }, c.meaning));
+    body.appendChild($('p', { class: 'detail-meaning' }, c.meaning));
   }
-  hero.appendChild(info);
-  article.appendChild(hero);
+
+  // Meta tags row
+  const metaRow = $('div', { class: 'meta-row' });
+  metaRow.appendChild($('div', { class: 'meta-tag' },
+    $('span', { class: 'meta-label' }, 'IDS'),
+    $('span', null, c.ids)
+  ));
+  if (c.components && c.components.length) {
+    const radical = c.components[0];
+    metaRow.appendChild($('div', { class: 'meta-tag' },
+      $('span', { class: 'meta-label' }, '\u90E8\u9996'),
+      $('span', null, radical.char + (radical.meaning ? ' (' + radical.meaning + ')' : ''))
+    ));
+  }
+  if (c.formation) {
+    metaRow.appendChild($('div', { class: 'meta-tag' },
+      $('span', { class: 'meta-label' }, '\u9020\u5B57'),
+      $('span', null, c.formation)
+    ));
+  }
+  body.appendChild(metaRow);
+
+  // Definitions
+  if (c.definitions && c.definitions.length) {
+    const sec = $('section', { class: 'section' });
+    sec.appendChild($('h2', null, '\u91CB\u7FA9 Definitions'));
+    for (let i = 0; i < c.definitions.length; i++) {
+      const def = c.definitions[i];
+      const block = $('div', { class: 'def-block' });
+      const defLine = $('div', { class: 'def-line' });
+      defLine.appendChild($('span', { class: 'def-num' }, String(i + 1)));
+      defLine.appendChild($('span', { class: 'def-zh', lang: 'zh', html: inlineChar(escapeHtml(def.zh), c.ids, isvg) }));
+      block.appendChild(defLine);
+      block.appendChild($('p', { class: 'def-en' }, def.en));
+      sec.appendChild(block);
+    }
+    body.appendChild(sec);
+  }
+
+  // Examples
+  if (c.examples && c.examples.length) {
+    const sec = $('section', { class: 'section' });
+    sec.appendChild($('h2', null, '\u7528\u4F8B Examples'));
+    for (const ex of c.examples) {
+      const el = $('div', { class: 'example' });
+      el.appendChild($('p', { class: 'example-zh', lang: 'zh', html: inlineChar(escapeHtml(ex.text), c.ids, isvg) }));
+      if (ex.translation) {
+        el.appendChild($('p', { class: 'example-en' }, ex.translation));
+      }
+      if (ex.style) {
+        el.appendChild($('span', { class: 'example-style' }, ex.style));
+      }
+      sec.appendChild(el);
+    }
+    body.appendChild(sec);
+  }
+
+  // Classical source
+  if (c.source) {
+    const sec = $('section', { class: 'section' });
+    sec.appendChild($('h2', null, '\u5178\u7C4D Source'));
+    const card = $('div', { class: 'source-card' });
+    if (c.source.work) {
+      card.appendChild($('div', { class: 'source-work' }, c.source.work));
+    }
+    if (c.source.gloss) {
+      card.appendChild($('p', { class: 'source-gloss', lang: 'zh', html: inlineChar(escapeHtml(c.source.gloss), c.ids, isvg) }));
+    }
+    sec.appendChild(card);
+    body.appendChild(sec);
+  }
 
   // Etymology
   if (c.etymology) {
     const sec = $('section', { class: 'section' });
-    sec.appendChild($('h2', null, 'Etymology'));
-    sec.appendChild($('div', { class: 'etymology', html: etymologyToHtml(c.etymology) }));
-    article.appendChild(sec);
+    sec.appendChild($('h2', null, '\u5B57\u6E90 Etymology'));
+    sec.appendChild($('div', { class: 'etymology', html: etymologyToHtml(c.etymology, c.ids, isvg) }));
+    body.appendChild(sec);
   }
 
   // Components
   if (c.components && c.components.length) {
     const sec = $('section', { class: 'section' });
-    sec.appendChild($('h2', null, 'Components'));
+    sec.appendChild($('h2', null, '\u90E8\u4EF6 Components'));
     const wrap = $('div', { class: 'components' });
     for (const comp of c.components) {
       const el = $('div', { class: 'component' },
@@ -143,38 +241,36 @@ async function showCharacter(id) {
       wrap.appendChild(el);
     }
     sec.appendChild(wrap);
-    article.appendChild(sec);
+    body.appendChild(sec);
   }
 
-  // Examples
-  if (c.examples && c.examples.length) {
+  // Related characters
+  if (c.related && c.related.length) {
     const sec = $('section', { class: 'section' });
-    sec.appendChild($('h2', null, 'Examples'));
-    const wrap = $('div', { class: 'examples' });
-    for (const ex of c.examples) {
-      const el = $('div', { class: 'example' });
-      el.appendChild($('p', { class: 'example-text', lang: 'zh' }, ex.text));
-      if (ex.translation) {
-        el.appendChild($('p', { class: 'example-translation' }, ex.translation));
-      }
-      wrap.appendChild(el);
+    sec.appendChild($('h2', null, '\u76F8\u95DC\u5B57 Related'));
+    const wrap = $('div', { class: 'related-chars' });
+    for (const r of c.related) {
+      wrap.appendChild($('span', { class: 'related-char' },
+        $('span', { class: 'related-char-zh' }, r.char),
+        $('span', { class: 'related-char-info' },
+          (r.pinyin || '') + (r.gloss ? ' \u2014 ' + r.gloss : '')
+        )
+      ));
     }
     sec.appendChild(wrap);
-    article.appendChild(sec);
+    body.appendChild(sec);
   }
 
   // Tags
   if (c.tags && c.tags.length) {
-    const sec = $('section', { class: 'section' });
     const wrap = $('div', { class: 'tags' });
     for (const tag of c.tags) {
       wrap.appendChild($('span', { class: 'tag' }, tag));
     }
-    sec.appendChild(wrap);
-    article.appendChild(sec);
+    body.appendChild(wrap);
   }
 
-  app.appendChild(article);
+  app.appendChild(body);
 }
 
 // --- Router ---

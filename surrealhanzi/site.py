@@ -82,12 +82,14 @@ def build(output_dir: str | None = None) -> None:
             json.dump(full, f, ensure_ascii=False)
         print(f"  characters/{char['id']}.json")
 
-        # Manifest stub — no SVG, just metadata for the grid
+        # Manifest stub for the grid (includes SVG for card display)
         manifest.append({
             'id': char['id'],
             'ids': char.get('ids', ''),
             'title': char.get('title', char['id']),
             'meaning': char.get('meaning', ''),
+            'pronunciation': char.get('pronunciation', ''),
+            'svg': full['svg'],
         })
 
     manifest_path = os.path.join(output_dir, 'manifest.json')
