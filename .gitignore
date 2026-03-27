@@ -12,3 +12,13 @@ data/ids_babelstone.txt
 
 # Trained models
 models/
+
+# Font files (large binaries, download separately)
+fonts/
+
+# Generated outputs
+examples/generated_v2/
+examples/grade_report.html
+
+# Local config
+.claude/
