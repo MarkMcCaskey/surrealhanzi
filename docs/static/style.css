@@ -1,13 +1,15 @@
 /* SurrealHanzi */
 
 /* Inline character SVG — replaces IDS text in sentences.
-   1em × 1em matches CJK character cell size.
-   Negative vertical-align accounts for CJK descent (~12% of em). */
+   Slightly oversized (1.15em) to match Noto Serif TC's actual CJK glyph
+   size (which extends beyond 1em due to ascent/descent metrics).
+   Negative margins keep horizontal flow at 1em per character. */
 .inline-char {
   display: inline-block;
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.12em;
+  width: 1.1em;
+  height: 1.1em;
+  margin: 0 -0.05em;
+  vertical-align: -0.22em;
   color: currentColor;
 }
 

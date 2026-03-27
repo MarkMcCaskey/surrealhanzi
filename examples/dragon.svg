@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" style="color: #000">
 <style>@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap");</style>
-<g transform="translate(71.07,22.68) scale(0.393892,0.254518) translate(-54.00,861.00) scale(1,-1)" stroke="currentColor" stroke-width="4.6" stroke-linejoin="round" paint-order="stroke fill">
+<g transform="translate(61.12,12.70) scale(0.415069,0.268201) translate(-54.00,861.00) scale(1,-1)" stroke="currentColor" stroke-width="6.6" stroke-linejoin="round" paint-order="stroke fill">
   <path d="M 350 796 Q 372 775 398 751 Q 411 738 426 739 Q 436 740 441 753 Q 445 766 437 795 Q 428 822 345 842 Q 330 846 324 843 Q 320 839 321 827 Q 324 817 350 796 Z" fill="currentColor" />
   <path d="M 440 663 Q 450 667 462 668 Q 501 675 506 681 Q 513 688 510 694 Q 504 704 481 710 Q 457 716 367 687 Q 295 672 227 666 Q 199 662 219 647 Q 249 629 311 640 Q 356 649 406 657 L 440 663 Z" fill="currentColor" />
   <path d="M 253 579 Q 271 542 289 526 Q 299 522 308 529 Q 315 536 316 550 Q 313 581 268 604 Q 258 611 250 610 Q 246 610 245 601 Q 244 592 253 579 Z" fill="currentColor" />
@@ -18,7 +18,7 @@
   <path d="M 594 266 Q 624 253 769 279 Q 794 283 798 287 Q 805 293 802 299 Q 798 308 775 314 Q 753 320 730 311 Q 702 302 670 296 Q 636 290 595 288 C 565 286 565 275 594 266 Z" fill="currentColor" />
   <path d="M 596 169 Q 638 151 674 161 Q 729 170 788 179 Q 813 183 818 188 Q 825 195 822 202 Q 816 212 792 219 Q 773 223 691 203 Q 643 194 600 192 Q 594 192 593 190 C 565 182 568 180 596 169 Z" fill="currentColor" />
 </g>
-<g transform="translate(71.07,260.76) scale(0.393892,0.254518) translate(-54.00,861.00) scale(1,-1)" stroke="currentColor" stroke-width="4.6" stroke-linejoin="round" paint-order="stroke fill">
+<g transform="translate(61.12,258.46) scale(0.415069,0.268201) translate(-54.00,861.00) scale(1,-1)" stroke="currentColor" stroke-width="6.6" stroke-linejoin="round" paint-order="stroke fill">
   <path d="M 350 796 Q 372 775 398 751 Q 411 738 426 739 Q 436 740 441 753 Q 445 766 437 795 Q 428 822 345 842 Q 330 846 324 843 Q 320 839 321 827 Q 324 817 350 796 Z" fill="currentColor" />
   <path d="M 440 663 Q 450 667 462 668 Q 501 675 506 681 Q 513 688 510 694 Q 504 704 481 710 Q 457 716 367 687 Q 295 672 227 666 Q 199 662 219 647 Q 249 629 311 640 Q 356 649 406 657 L 440 663 Z" fill="currentColor" />
   <path d="M 253 579 Q 271 542 289 526 Q 299 522 308 529 Q 315 536 316 550 Q 313 581 268 604 Q 258 611 250 610 Q 246 610 245 601 Q 244 592 253 579 Z" fill="currentColor" />

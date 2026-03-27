@@ -30,7 +30,7 @@ SOURCE_H = 1024.0
 SOURCE_Y_OFFSET = 900.0
 
 # Padding fraction within each component cell (prevents components touching edges)
-PADDING = 0.02
+PADDING = 0.01
 
 # Minimum effective source dimension (fraction of SOURCE_W) when computing
 # scales for composed components.  Prevents small/simple radicals from being
@@ -48,12 +48,12 @@ SQUISH_BLEND = 0.60
 # outlines to compensate for visual thinning.  stroke_factor also accounts
 # for stroke count: simpler radicals (fewer, thicker paths) get less
 # compensation than dense components (many thin paths).
-STROKE_COMPENSATE = 1.0  # base visual output units of added stroke
+STROKE_COMPENSATE = 1.5  # base visual output units of added stroke
 
 # Character body fraction of the em-square for composed characters.
 # Standalone chars naturally fill ~85% of the em-square (from font data).
 # Composed characters should match, so they look the same size as real glyphs.
-EM_BODY = 0.93  # content area = 93% of viewBox, matching real font characters
+EM_BODY = 0.96  # content area = 96% of viewBox
 
 # Font to use in SVGs (for text fallbacks; matches site CSS)
 SVG_FONT = '"Noto Serif TC", "Source Han Serif TC", "Songti TC", serif'

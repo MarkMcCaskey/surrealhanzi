@@ -36,9 +36,10 @@ body {{
 }}
 .inline-char {{
   display: inline-block;
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.12em;
+  width: 1.1em;
+  height: 1.1em;
+  margin: 0 -0.05em;
+  vertical-align: -0.22em;
   color: currentColor;
 }}
 .test-line {{
@@ -404,7 +405,7 @@ def _capture_one(page, entry: dict, renderer: Renderer) -> InlineCapture:
 
     # Build HTML and load page
     html = _build_test_html(inline_svg, examples, ids)
-    page.set_content(html)
+    page.set_content(html, wait_until="domcontentloaded")
 
     # Wait for fonts (5s timeout)
     try:

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" style="color: #000">
 <style>@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap");</style>
-<g transform="translate(76.72,22.31) scale(0.466871,0.274378) translate(-149.00,767.00) scale(1,-1)" stroke="currentColor" stroke-width="4.0" stroke-linejoin="round" paint-order="stroke fill">
+<g transform="translate(67.08,12.51) scale(0.491972,0.289129) translate(-149.00,767.00) scale(1,-1)" stroke="currentColor" stroke-width="5.8" stroke-linejoin="round" paint-order="stroke fill">
   <path d="M 502 676 Q 587 689 679 701 Q 743 711 753 719 Q 763 726 758 736 Q 752 749 723 758 Q 692 767 661 756 Q 588 737 509 722 Q 422 709 321 705 Q 284 701 308 682 Q 350 655 424 667 Q 440 670 458 670 L 502 676 Z" fill="currentColor" />
   <path d="M 219 488 Q 191 512 164 517 Q 158 520 153 513 Q 149 506 153 492 Q 184 438 187 392 Q 196 284 185 165 Q 181 140 192 118 Q 205 97 224 84 Q 239 75 241 87 Q 248 91 250 115 Q 256 142 246 231 Q 234 390 234 450 C 234 476 234 476 219 488 Z" fill="currentColor" />
   <path d="M 529 507 Q 559 514 789 532 Q 808 533 814 524 Q 824 517 822 466 Q 816 258 783 141 Q 773 105 742 111 Q 703 120 668 127 Q 655 131 654 125 Q 653 118 664 107 Q 740 49 761 17 Q 771 -1 784 2 Q 800 3 815 33 Q 843 76 852 129 Q 868 199 882 446 Q 885 491 899 515 Q 917 537 903 542 Q 887 558 849 576 Q 825 592 799 581 Q 763 571 672 560 Q 596 553 530 543 L 485 536 Q 430 529 386 519 Q 301 501 219 488 C 189 483 206 440 234 450 Q 255 468 486 500 L 529 507 Z" fill="currentColor" />
@@ -10,7 +10,7 @@
   <path d="M 611 413 Q 669 383 697 382 Q 709 383 712 395 Q 713 407 707 418 Q 689 445 632 445 Q 598 445 591 439 Q 587 436 592 428 Q 596 419 611 413 Z" fill="currentColor" />
   <path d="M 609 269 Q 658 233 686 228 Q 699 228 704 240 Q 707 252 702 264 Q 684 297 633 300 Q 600 304 592 299 Q 588 298 591 287 Q 594 278 609 269 Z" fill="currentColor" />
 </g>
-<g transform="translate(67.34,242.56) scale(0.401837,0.274378) translate(-54.00,861.00) scale(1,-1)" stroke="currentColor" stroke-width="4.4" stroke-linejoin="round" paint-order="stroke fill">
+<g transform="translate(57.19,239.47) scale(0.423441,0.289129) translate(-54.00,861.00) scale(1,-1)" stroke="currentColor" stroke-width="6.3" stroke-linejoin="round" paint-order="stroke fill">
   <path d="M 350 796 Q 372 775 398 751 Q 411 738 426 739 Q 436 740 441 753 Q 445 766 437 795 Q 428 822 345 842 Q 330 846 324 843 Q 320 839 321 827 Q 324 817 350 796 Z" fill="currentColor" />
   <path d="M 440 663 Q 450 667 462 668 Q 501 675 506 681 Q 513 688 510 694 Q 504 704 481 710 Q 457 716 367 687 Q 295 672 227 666 Q 199 662 219 647 Q 249 629 311 640 Q 356 649 406 657 L 440 663 Z" fill="currentColor" />
   <path d="M 253 579 Q 271 542 289 526 Q 299 522 308 529 Q 315 536 316 550 Q 313 581 268 604 Q 258 611 250 610 Q 246 610 245 601 Q 244 592 253 579 Z" fill="currentColor" />
