@@ -69,9 +69,30 @@ def _analyze_transforms(svg: str) -> list[tuple[float, float]]:
     return scales
 
 
-def _analyze_stroke_weights(svg: str) -> list[float]:
-    """Extract stroke-width values from SVG (stroke weight compensation)."""
-    return [float(m) for m in re.findall(r'stroke-width="([^"]+)"', svg)]
+def _analyze_stroke_weights(svg: str) -> tuple[list[float], list[float]]:
+    """Extract stroke-width values and visual stroke weights from SVG.
+
+    Returns (raw_widths, visual_widths) where visual_widths = stroke_width * avg_scale.
+    Visual weights are what the viewer actually sees — comparing these is more
+    meaningful than comparing raw SVG attribute values.
+    """
+    raw_widths: list[float] = []
+    visual_widths: list[float] = []
+    # Match <g transform="..." stroke-width="..."> groups
+    pattern = re.compile(
+        r'<g\s+transform="[^"]*scale\(([^)]+)\)[^"]*"'
+        r'[^>]*stroke-width="([^"]+)"')
+    for match in pattern.finditer(svg):
+        s_parts = match.group(1).split(',')
+        sw = float(match.group(2))
+        raw_widths.append(sw)
+        if len(s_parts) == 2:
+            sx, sy = abs(float(s_parts[0])), abs(float(s_parts[1]))
+            avg_scale = (sx + sy) / 2
+            visual_widths.append(sw * avg_scale)
+        else:
+            visual_widths.append(sw)
+    return raw_widths, visual_widths
 
 
 def _analyze_component_areas(svg: str, size: int = 256) -> list[float]:
@@ -214,17 +235,25 @@ def _check_overlap(tree, glyph_data) -> list[Issue]:
                         f"Overlay ({op_name}): {char} + "
                         f"{node.children[1].to_ids()} fully overlapping"))
                 elif char not in known:
-                    # Check geometric overlap
-                    overlap = _estimate_overlap(char, op, glyph_data)
-                    if overlap > 0.7:
-                        issues.append(Issue("warning",
-                            f"Heavy overlap ({overlap:.0%}): {char} is not a "
-                            f"typical {op_name} radical — strokes cover "
-                            f"inner component area"))
-                    elif overlap > 0.4:
+                    # Renderer uses a non-overlapping fallback layout for
+                    # non-standard outers, so flag as info rather than
+                    # computing overlap against the standard insets.
+                    from .renderer import SURROUND_OUTERS
+                    if op in SURROUND_OUTERS:
                         issues.append(Issue("info",
-                            f"Partial overlap ({overlap:.0%}): {char} used "
-                            f"as {op_name} outer"))
+                            f"Non-standard {op_name} outer: {char} — "
+                            f"using split layout"))
+                    else:
+                        # Operators not in SURROUND_OUTERS (⿻, ⿼, ⿽)
+                        overlap = _estimate_overlap(char, op, glyph_data)
+                        if overlap > 0.7:
+                            issues.append(Issue("warning",
+                                f"Heavy overlap ({overlap:.0%}): {char} "
+                                f"covers inner component in {op_name}"))
+                        elif overlap > 0.4:
+                            issues.append(Issue("info",
+                                f"Partial overlap ({overlap:.0%}): {char} "
+                                f"in {op_name}"))
 
         for child in node.children:
             _walk(child)
@@ -323,9 +352,9 @@ def grade_character(ids_string: str, renderer: Renderer, glyph_data,
                     f"component may be hard to read"))
 
     # 8. Analyze stroke weight compensation
-    stroke_widths = _analyze_stroke_weights(svg)
-    if stroke_widths:
-        max_sw = max(stroke_widths)
+    raw_widths, visual_widths = _analyze_stroke_weights(svg)
+    if raw_widths:
+        max_sw = max(raw_widths)
         if max_sw > 20:
             issues.append(Issue("warning",
                 f"Heavy stroke compensation ({max_sw:.0f}px) — "
@@ -333,27 +362,45 @@ def grade_character(ids_string: str, renderer: Renderer, glyph_data,
         elif max_sw > 10:
             issues.append(Issue("info",
                 f"Moderate stroke compensation ({max_sw:.0f}px)"))
-        # Check disparity between components
-        if len(stroke_widths) > 1:
-            min_sw = min(stroke_widths)
-            if max_sw > 0 and min_sw > 0:
-                sw_ratio = max_sw / min_sw
-                if sw_ratio > 2.0:
+        # Compare visual stroke weights (stroke-width * scale), which is
+        # what the viewer actually sees. Raw SVG values can differ 3x while
+        # the visual thickness is nearly identical.
+        if len(visual_widths) > 1:
+            max_vw = max(visual_widths)
+            min_vw = min(visual_widths)
+            if max_vw > 0 and min_vw > 0:
+                vw_ratio = max_vw / min_vw
+                if vw_ratio > 2.5:
                     issues.append(Issue("warning",
-                        f"Stroke weight disparity {sw_ratio:.1f}x "
+                        f"Visual stroke weight disparity {vw_ratio:.1f}x "
                         f"between components"))
+                elif vw_ratio > 1.8:
+                    issues.append(Issue("info",
+                        f"Visual stroke weight difference {vw_ratio:.1f}x"))
 
     # 9. Analyze component area balance
+    # Use higher thresholds when surround operators are present, since
+    # outer-fills-all / inner-inset layouts inherently have large ratios.
+    def _has_surround_op(node) -> bool:
+        if node.is_leaf:
+            return False
+        if node.operator in _SURROUND_OPS:
+            return True
+        return any(_has_surround_op(c) for c in node.children)
+    has_surround = _has_surround_op(tree)
+    area_warn = 10.0 if has_surround else 6.0
+    area_info = 6.0 if has_surround else 3.5
+
     areas = _analyze_component_areas(svg)
     if len(areas) >= 2:
         max_area = max(areas)
         min_area = min(areas)
         if min_area > 0:
             area_ratio = max_area / min_area
-            if area_ratio > 6.0:
+            if area_ratio > area_warn:
                 issues.append(Issue("warning",
                     f"Component size imbalance {area_ratio:.1f}x"))
-            elif area_ratio > 3.5:
+            elif area_ratio > area_info:
                 issues.append(Issue("info",
                     f"Component size difference {area_ratio:.1f}x"))
 
@@ -376,7 +423,7 @@ def grade_character(ids_string: str, renderer: Renderer, glyph_data,
         grade = "C"
     elif warnings == 1:
         grade = "B"
-    elif infos > 2:
+    elif infos > 3:
         grade = "B"
     else:
         grade = "A"

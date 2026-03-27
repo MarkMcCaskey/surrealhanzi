@@ -75,6 +75,19 @@ BOTTOM_VARIANTS: dict[str, str] = {
     "心": "心",  # stays same at bottom (as in 思)
 }
 
+# Known surround radicals per operator.  When the outer component is NOT in
+# this set, the renderer uses a non-overlapping fallback layout to prevent
+# the inner component from being hidden under a full-coverage glyph.
+SURROUND_OUTERS: dict[str, set[str]] = {
+    "\u2FF4": {"囗", "口", "回"},
+    "\u2FF5": {"門", "冂", "冈", "鬥", "冃"},
+    "\u2FF6": {"凵", "山"},
+    "\u2FF7": {"匚", "匸", "臣", "巨"},
+    "\u2FF8": {"广", "厂", "尸", "疒", "戶", "户", "虍"},
+    "\u2FF9": {"戈", "弋", "气"},
+    "\u2FFA": {"辶", "辵", "廴", "走", "之", "毛"},
+}
+
 RIGHT_VARIANTS: dict[str, str] = {
     "刀": "刂",
     "邑": "⻏",
@@ -255,6 +268,55 @@ def _subdivide(bbox: BBox, operator: str, child_index: int, num_children: int) -
     # Fallback
     cw = w / num_children
     return BBox(x + child_index * cw, y, cw, h)
+
+
+def _surround_fallback(bbox: BBox, operator: str, child_index: int) -> BBox:
+    """Non-overlapping layout for surround operators with non-standard outers.
+
+    When the outer component isn't a typical surround radical (e.g., 風 in ⿺風日),
+    it fills its entire space and the inner component would be hidden underneath.
+    This function provides a split layout inspired by the surround direction but
+    without overlap.
+    """
+    x, y, w, h = bbox.x, bbox.y, bbox.w, bbox.h
+
+    if operator == "\u2FFA":  # ⿺ lower-left → outer bottom-left, inner top-right
+        if child_index == 0:
+            return BBox(x, y + h * 0.30, w * 0.55, h * 0.70)
+        return BBox(x + w * 0.45, y, w * 0.55, h * 0.55)
+
+    elif operator == "\u2FF8":  # ⿸ upper-left → outer top-left, inner bottom-right
+        if child_index == 0:
+            return BBox(x, y, w * 0.55, h * 0.60)
+        return BBox(x + w * 0.40, y + h * 0.35, w * 0.60, h * 0.65)
+
+    elif operator == "\u2FF9":  # ⿹ upper-right → outer top-right, inner bottom-left
+        if child_index == 0:
+            return BBox(x + w * 0.45, y, w * 0.55, h * 0.60)
+        return BBox(x, y + h * 0.35, w * 0.60, h * 0.65)
+
+    elif operator == "\u2FF4":  # ⿴ full surround → treat as ⿰
+        if child_index == 0:
+            return BBox(x, y, w * 0.50, h)
+        return BBox(x + w * 0.50, y, w * 0.50, h)
+
+    elif operator == "\u2FF5":  # ⿵ surround above → treat as ⿱
+        if child_index == 0:
+            return BBox(x, y, w, h * 0.50)
+        return BBox(x, y + h * 0.50, w, h * 0.50)
+
+    elif operator == "\u2FF6":  # ⿶ surround below → treat as ⿱
+        if child_index == 0:
+            return BBox(x, y + h * 0.50, w, h * 0.50)
+        return BBox(x, y, w, h * 0.50)
+
+    elif operator == "\u2FF7":  # ⿷ surround left → treat as ⿰
+        if child_index == 0:
+            return BBox(x, y, w * 0.50, h)
+        return BBox(x + w * 0.50, y, w * 0.50, h)
+
+    # Default: standard subdivide
+    return _subdivide(bbox, operator, child_index, 2)
 
 
 def _render_strokes_tightfit(strokes: list[str], target: BBox,
@@ -750,12 +812,26 @@ class Renderer:
             for i, child in enumerate(node.children)
         ]
 
+        # For surround operators with non-standard outers, use a
+        # non-overlapping layout instead of the normal overlapping one.
+        use_fallback_layout = False
+        if (node.operator in SURROUND_OUTERS
+                and len(resolved_children) >= 2):
+            outer = resolved_children[0]
+            if outer.is_leaf and outer.character:
+                known = SURROUND_OUTERS.get(node.operator, set())
+                if outer.character not in known:
+                    use_fallback_layout = True
+
         # Compute dynamic split ratio based on component natural widths/heights
         split_ratios = self._compute_split_ratios(node.operator, resolved_children)
 
         parts = []
         for i, resolved in enumerate(resolved_children):
-            if split_ratios:
+            if use_fallback_layout:
+                child_bbox = _surround_fallback(
+                    bbox, node.operator, i)
+            elif split_ratios:
                 child_bbox = self._dynamic_subdivide(
                     bbox, node.operator, i, split_ratios)
             else:
