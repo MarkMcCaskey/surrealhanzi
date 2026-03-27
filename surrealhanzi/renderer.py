@@ -356,7 +356,7 @@ def _render_strokes_tightfit(strokes: list[str], target: BBox,
         if avg_scale > 0.001:
             stroke_factor = min(width_ratio * 2.0, 1.5)
             sw = STROKE_COMPENSATE * stroke_factor / avg_scale
-            sw = min(sw, 40)
+            sw = min(sw, 8)
             if sw > 1.0:
                 stroke_attrs = (
                     f' stroke="currentColor" stroke-width="{sw:.1f}"'
@@ -585,6 +585,38 @@ class Renderer:
                 return (sb[2] - sb[0], sb[3] - sb[1])
         return None
 
+    def _subtree_size(self, node: IDSNode) -> tuple[float, float] | None:
+        """Recursively estimate natural (width, height) of any IDS subtree.
+
+        For leaves, returns the glyph's natural size.
+        For composites, combines children based on the operator type.
+        """
+        if node.is_leaf:
+            # Resolve variant before measuring
+            if node.character:
+                return self._leaf_size(node)
+            return None
+
+        child_sizes = [self._subtree_size(c) for c in node.children]
+        if any(s is None for s in child_sizes):
+            return None
+
+        op = node.operator
+        if op in ("\u2FF0", "\u2FF2"):  # ⿰⿲ left-right
+            w = sum(s[0] for s in child_sizes)
+            h = max(s[1] for s in child_sizes)
+            return (w, h)
+        elif op in ("\u2FF1", "\u2FF3"):  # ⿱⿳ top-bottom
+            w = max(s[0] for s in child_sizes)
+            h = sum(s[1] for s in child_sizes)
+            return (w, h)
+        elif op == "\u2FFB":  # ⿻ overlaid
+            w = max(s[0] for s in child_sizes)
+            h = max(s[1] for s in child_sizes)
+            return (w, h)
+        else:  # surround operators — use outer child's size
+            return child_sizes[0]
+
     def _compute_split_ratios(self, operator: str,
                               children: list[IDSNode]) -> list[float] | None:
         """Compute proportional split ratios from component natural sizes.
@@ -593,7 +625,7 @@ class Renderer:
         or None to fall back to fixed ratios.
         """
         if operator == "\u2FF0":  # ⿰ left-right: split by width
-            sizes = [self._leaf_size(c) for c in children]
+            sizes = [self._subtree_size(c) for c in children]
             if all(s is not None for s in sizes):
                 widths = [s[0] for s in sizes]
                 # In CJK typography, the left radical is narrower than its
@@ -604,21 +636,21 @@ class Renderer:
                 if total > 0:
                     return [w / total for w in widths]
         elif operator == "\u2FF1":  # ⿱ top-bottom: split by height
-            sizes = [self._leaf_size(c) for c in children]
+            sizes = [self._subtree_size(c) for c in children]
             if all(s is not None for s in sizes):
                 heights = [s[1] for s in sizes]
                 total = sum(heights)
                 if total > 0:
                     return [h / total for h in heights]
         elif operator == "\u2FF2":  # ⿲ left-mid-right: split by width
-            sizes = [self._leaf_size(c) for c in children]
+            sizes = [self._subtree_size(c) for c in children]
             if all(s is not None for s in sizes):
                 widths = [s[0] for s in sizes]
                 total = sum(widths)
                 if total > 0:
                     return [w / total for w in widths]
         elif operator == "\u2FF3":  # ⿳ top-mid-bottom: split by height
-            sizes = [self._leaf_size(c) for c in children]
+            sizes = [self._subtree_size(c) for c in children]
             if all(s is not None for s in sizes):
                 heights = [s[1] for s in sizes]
                 total = sum(heights)
@@ -662,6 +694,15 @@ class Renderer:
             char = node.character or "?"
             strokes = self.glyph_data.get_strokes(char)
             if strokes:
+                if parent_op == "\u2FFB":
+                    # ⿻ Overlaid: use full-canvas so both children preserve
+                    # their natural em-square positions. Without this, small
+                    # components like 丶 get enlarged to fill the full box.
+                    return _render_strokes_fullcanvas(
+                        strokes, bbox,
+                        self._source_w, self._source_h,
+                        self._source_y_offset,
+                    )
                 if parent_op is not None:
                     ax, ay = self._alignment_for(parent_op, child_idx)
                     # Font glyphs have balanced weights from the designer —
