@@ -9,6 +9,7 @@ dependencies = []
 download = ["requests"]
 site = ["pyyaml"]
 dictgen = ["anthropic", "pyyaml", "cairosvg"]
+inline-grade = ["playwright", "pillow", "pyyaml"]
 
 [tool.setuptools.packages.find]
 include = ["surrealhanzi*"]

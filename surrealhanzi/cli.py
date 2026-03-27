@@ -72,6 +72,8 @@ def main() -> None:
                          help="Grade specific IDS strings instead of dictionary entries")
     grade_p.add_argument("--no-report", action="store_true",
                          help="Skip HTML report, terminal output only")
+    grade_p.add_argument("--inline", action="store_true",
+                         help="Grade inline rendering (requires playwright, pillow)")
 
     # Site command
     site_p = subparsers.add_parser("site", help="Build the static dictionary site")
@@ -247,24 +249,42 @@ def main() -> None:
             build(output_dir=None)
 
     elif args.command == "grade":
-        from .grade import (
-            grade_all, grade_ids_list, generate_report, print_summary,
-        )
+        from .grade import print_summary
 
         glyph_data = GlyphData()
         glyph_data.load()
         renderer = Renderer(glyph_data)
 
-        if args.ids:
-            results = grade_ids_list(args.ids, renderer, glyph_data)
+        if args.inline:
+            from .inline_grade import (
+                grade_all_inline, grade_ids_inline, generate_inline_report,
+            )
+            if args.ids:
+                results, captures = grade_ids_inline(
+                    args.ids, renderer, glyph_data)
+            else:
+                results, captures = grade_all_inline(
+                    args.characters_dir, renderer, glyph_data)
+
+            print_summary(results)
+
+            if not args.no_report:
+                output = args.output.replace('.html', '_inline.html')
+                generate_inline_report(results, captures, output)
+                print(f"\n  Inline report: {output}")
         else:
-            results = grade_all(args.characters_dir, renderer, glyph_data)
+            from .grade import grade_all, grade_ids_list, generate_report
 
-        print_summary(results)
+            if args.ids:
+                results = grade_ids_list(args.ids, renderer, glyph_data)
+            else:
+                results = grade_all(args.characters_dir, renderer, glyph_data)
 
-        if not args.no_report:
-            generate_report(results, args.output)
-            print(f"\n  Report: {args.output}")
+            print_summary(results)
+
+            if not args.no_report:
+                generate_report(results, args.output)
+                print(f"\n  Report: {args.output}")
 
     elif args.command == "site":
         from .site import build
