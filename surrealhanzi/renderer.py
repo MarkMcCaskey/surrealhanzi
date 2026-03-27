@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from typing import Optional
 from xml.sax.saxutils import escape
 
-from .glyph_data import GlyphData
 from .ids_parser import IDSNode, parse_ids
 
 
@@ -36,14 +35,28 @@ PADDING = 0.02
 # Minimum effective source dimension (fraction of SOURCE_W) when computing
 # scales for composed components.  Prevents small/simple radicals from being
 # enlarged so much that their strokes become visually heavier than neighbours.
-# Kept moderate — too aggressive and deeply nested components get too small.
-MIN_SOURCE_FRAC = 0.40
+MIN_SOURCE_FRAC = 0.30
 
 # How much non-uniform scaling (squishing) is allowed for composed components.
-# 0.0 = purely uniform, 1.0 = fully fill the box.  A small value gives mild
-# horizontal compression in ⿰ and vertical compression in ⿱, making
-# components look like parts of a character rather than standalone glyphs.
-SQUISH_BLEND = 0.35
+# 0.0 = purely uniform, 1.0 = fully fill the box.  Higher values let
+# components adapt to narrow/short boxes (e.g., filling height in ⿰ layouts).
+SQUISH_BLEND = 0.60
+
+# Stroke weight compensation for composed sub-components.
+# Adds an outline stroke to each component's paths, scaled inversely with
+# the transform scale, so that components scaled down more get thicker
+# outlines to compensate for visual thinning.  stroke_factor also accounts
+# for stroke count: simpler radicals (fewer, thicker paths) get less
+# compensation than dense components (many thin paths).
+STROKE_COMPENSATE = 1.0  # base visual output units of added stroke
+
+# Character body fraction of the em-square for composed characters.
+# Standalone chars naturally fill ~85% of the em-square (from font data).
+# Composed characters should match, so they look the same size as real glyphs.
+EM_BODY = 0.93  # content area = 93% of viewBox, matching real font characters
+
+# Font to use in SVGs (for text fallbacks; matches site CSS)
+SVG_FONT = '"Noto Serif TC", "Source Han Serif TC", "Songti TC", serif'
 
 
 # --- Radical variant mapping (Traditional Chinese / zh-TW) ---
@@ -248,7 +261,10 @@ def _render_strokes_tightfit(strokes: list[str], target: BBox,
                              clamp_weight: bool = False,
                              squish: bool = False,
                              align_x: float = 0.5,
-                             align_y: float = 0.5) -> str:
+                             align_y: float = 0.5,
+                             src_bbox: tuple[float, float, float, float] | None = None,
+                             squish_blend: float = SQUISH_BLEND,
+                             ) -> str:
     """Render strokes with a tight-fit transform.
 
     Instead of mapping from the full 1024x1024 source space, compute the
@@ -259,8 +275,12 @@ def _render_strokes_tightfit(strokes: list[str], target: BBox,
               shape (e.g., horizontally compressed in narrow ⿰ boxes).
     *align_x*: horizontal alignment (0=left, 0.5=center, 1=right).
     *align_y*: vertical alignment (0=top, 0.5=center, 1=bottom).
+    *src_bbox*: pre-computed source bounding box (xMin, yMin, xMax, yMax).
+                If None, computed from path data (fine for simple paths, but
+                incorrect for complex SVG commands like H/V/C).
     """
-    src_bbox = _stroke_bbox(strokes)
+    if src_bbox is None:
+        src_bbox = _stroke_bbox(strokes)
     if src_bbox is None:
         return ""
 
@@ -278,7 +298,18 @@ def _render_strokes_tightfit(strokes: list[str], target: BBox,
              target.w - 2 * pad_x, target.h - 2 * pad_y)
 
     if clamp_weight:
-        min_src = SOURCE_W * MIN_SOURCE_FRAC
+        # Adaptive clamping: simple/narrow components get clamped more
+        # to prevent over-enlargement that distorts proportions.
+        # Use bounding box width as a complexity proxy (works for both
+        # multi-stroke Make Me a Hanzi data and single-path font glyphs).
+        width_ratio = src_w / SOURCE_W  # how much of the em-square the glyph spans
+        if width_ratio < 0.40:
+            frac = MIN_SOURCE_FRAC + 0.20  # narrow radicals like 氵, 亻
+        elif width_ratio < 0.65:
+            frac = MIN_SOURCE_FRAC + 0.10  # moderate width
+        else:
+            frac = MIN_SOURCE_FRAC          # full-width glyphs: minimal clamping
+        min_src = SOURCE_W * frac
         eff_w = max(src_w, min_src)
         eff_h = max(src_h, min_src)
     else:
@@ -288,16 +319,16 @@ def _render_strokes_tightfit(strokes: list[str], target: BBox,
     # Base uniform scale
     uniform_scale = min(t.w / eff_w, t.h / eff_h)
 
-    if squish and SQUISH_BLEND > 0:
+    if squish and squish_blend > 0:
         # Compute per-axis scales that would fill the box
         fill_sx = t.w / src_w
         fill_sy = t.h / src_h
         # Blend between uniform and fill, capped by weight clamp
-        sx = uniform_scale * (1 - SQUISH_BLEND) + fill_sx * SQUISH_BLEND
-        sy = uniform_scale * (1 - SQUISH_BLEND) + fill_sy * SQUISH_BLEND
+        sx = uniform_scale * (1 - squish_blend) + fill_sx * squish_blend
+        sy = uniform_scale * (1 - squish_blend) + fill_sy * squish_blend
         # Don't exceed the weight-clamped uniform scale by too much
         if clamp_weight:
-            max_scale = uniform_scale * 1.4
+            max_scale = uniform_scale * 2.0
             sx = min(sx, max_scale)
             sy = min(sy, max_scale)
     else:
@@ -316,25 +347,64 @@ def _render_strokes_tightfit(strokes: list[str], target: BBox,
         f"scale(1,-1)"
     )
 
-    parts = [f'<g transform="{transform}">']
+    # Compute compensating stroke for weight normalization in compositions.
+    stroke_attrs = ""
+    if clamp_weight and STROKE_COMPENSATE > 0:
+        # MMA data: components scaled down more get thicker outlines.
+        # Uses width_ratio as a complexity proxy.
+        avg_scale = (abs(sx) + abs(sy)) / 2
+        if avg_scale > 0.001:
+            stroke_factor = min(width_ratio * 2.0, 1.5)
+            sw = STROKE_COMPENSATE * stroke_factor / avg_scale
+            sw = min(sw, 40)
+            if sw > 1.0:
+                stroke_attrs = (
+                    f' stroke="currentColor" stroke-width="{sw:.1f}"'
+                    f' stroke-linejoin="round" paint-order="stroke fill"'
+                )
+    elif not clamp_weight and squish:
+        # Font data: non-uniform scaling thins strokes on the compressed
+        # axis.  Add a stroke in font units proportional to scale loss
+        # vs fullcanvas.  This scales with display size so the relative
+        # thickening is consistent at all sizes.
+        avg_scale = (abs(sx) + abs(sy)) / 2
+        if avg_scale > 0.001:
+            # fullcanvas_scale ≈ viewbox_size / em_units; approximate from
+            # the target box (which is close to the viewbox size).
+            fullcanvas_scale = max(target.w, target.h) / max(src_w, src_h)
+            if avg_scale < fullcanvas_scale:
+                # How much thinner are we vs fullcanvas? Add proportional stroke.
+                deficit = fullcanvas_scale / avg_scale - 1.0
+                sw = 12.0 * deficit  # ~12 font units per 1x deficit
+                sw = min(sw, 30)
+                if sw > 2.0:
+                    stroke_attrs = (
+                        f' stroke="currentColor" stroke-width="{sw:.1f}"'
+                        f' stroke-linejoin="round" paint-order="stroke fill"'
+                    )
+
+    parts = [f'<g transform="{transform}"{stroke_attrs}>']
     for stroke in strokes:
         parts.append(f'  <path d="{stroke}" fill="currentColor" />')
     parts.append("</g>")
     return "\n".join(parts)
 
 
-def _render_strokes_fullcanvas(strokes: list[str], bbox: BBox) -> str:
-    """Render strokes mapping from full 1024x1024 source canvas.
+def _render_strokes_fullcanvas(strokes: list[str], bbox: BBox,
+                               source_w: float = SOURCE_W,
+                               source_h: float = SOURCE_H,
+                               source_y_offset: float = SOURCE_Y_OFFSET) -> str:
+    """Render strokes mapping from the full source em-square.
 
     Used for complete characters where strokes are already positioned
     correctly within the full canvas.
     """
-    sx = bbox.w / SOURCE_W
-    sy = bbox.h / SOURCE_H
+    sx = bbox.w / source_w
+    sy = bbox.h / source_h
     transform = (
         f"translate({bbox.x:.2f},{bbox.y:.2f}) "
         f"scale({sx:.6f},{sy:.6f}) "
-        f"translate(0,{SOURCE_Y_OFFSET:.0f}) "
+        f"translate(0,{source_y_offset:.0f}) "
         f"scale(1,-1)"
     )
     parts = [f'<g transform="{transform}">']
@@ -352,9 +422,16 @@ def _render_placeholder(char: str, bbox: BBox) -> str:
     return (
         f'<text x="{cx:.1f}" y="{cy:.1f}" '
         f'text-anchor="middle" dominant-baseline="central" '
-        f'font-size="{font_size:.1f}" fill="currentColor">'
+        f'font-size="{font_size:.1f}" font-family={SVG_FONT!r} '
+        f'fill="currentColor">'
         f'{escape(char)}</text>'
     )
+
+
+_FONT_CSS = (
+    '@import url("https://fonts.googleapis.com/css2?'
+    'family=Noto+Serif+TC:wght@400;700&display=swap");'
+)
 
 
 def _svg_document(content: str, size: int) -> str:
@@ -363,6 +440,7 @@ def _svg_document(content: str, size: int) -> str:
         f'viewBox="0 0 {size} {size}" '
         f'width="{size}" height="{size}" '
         f'style="color: #000">\n'
+        f'<style>{_FONT_CSS}</style>\n'
         f'{content}\n'
         f'</svg>'
     )
@@ -377,20 +455,43 @@ class Renderer:
        These strokes are already optimized for their compositional context.
     2. **Algorithmic**: For novel/surreal patterns with no donor character,
        compose standalone component glyphs using data-driven proportions.
+
+    Accepts either GlyphData (Make Me a Hanzi) or FontGlyphData (OTF font).
+    The coordinate system is auto-detected from the glyph data source.
     """
 
-    def __init__(self, glyph_data: GlyphData) -> None:
+    def __init__(self, glyph_data) -> None:
         self.glyph_data = glyph_data
         self._decomp_index: Optional[dict[str, list[str]]] = None
+
+        # Detect coordinate system from glyph data
+        if hasattr(glyph_data, 'source_w'):
+            # FontGlyphData — font-based coordinate system.
+            # Higher squish: font strokes are designed to handle deformation,
+            # and real CJK components DO fill their allocated space.
+            self._source_w = glyph_data.source_w
+            self._source_h = glyph_data.source_h
+            self._source_y_offset = glyph_data.source_y_offset
+            self._is_font_data = True
+            self._squish_blend = 0.90
+        else:
+            # GlyphData — Make Me a Hanzi coordinate system
+            self._source_w = SOURCE_W
+            self._source_h = SOURCE_H
+            self._source_y_offset = SOURCE_Y_OFFSET
+            self._is_font_data = False
+            self._squish_blend = SQUISH_BLEND
 
     def _get_decomp_index(self) -> dict[str, list[str]]:
         """Build reverse index: IDS decomposition string -> list of characters."""
         if self._decomp_index is None:
             self._decomp_index = {}
-            for char in self.glyph_data._strokes:
-                decomp = self.glyph_data.get_decomposition(char)
-                if decomp:
-                    self._decomp_index.setdefault(decomp, []).append(char)
+            strokes_dict = getattr(self.glyph_data, '_strokes', None)
+            if strokes_dict:
+                for char in strokes_dict:
+                    decomp = self.glyph_data.get_decomposition(char)
+                    if decomp:
+                        self._decomp_index.setdefault(decomp, []).append(char)
         return self._decomp_index
 
     def _find_donor(self, ids_string: str) -> Optional[str]:
@@ -434,7 +535,10 @@ class Renderer:
 
         if in_composition:
             return _render_strokes_tightfit(collected, bbox)
-        return _render_strokes_fullcanvas(collected, bbox)
+        return _render_strokes_fullcanvas(
+            collected, bbox,
+            self._source_w, self._source_h, self._source_y_offset,
+        )
 
     def _resolve_variant(self, node: IDSNode, operator: str, child_index: int) -> IDSNode:
         """Apply radical variant mapping to a leaf node."""
@@ -466,6 +570,90 @@ class Renderer:
             return (0.5, 0.5)
         return (0.5, 0.5)
 
+    def _leaf_size(self, node: IDSNode) -> tuple[float, float] | None:
+        """Get the natural (width, height) of a leaf node's glyph."""
+        if not node.is_leaf or node.character is None:
+            return None
+        bb = self._get_bbox(node.character)
+        if bb:
+            return (bb[2] - bb[0], bb[3] - bb[1])
+        # Fallback: try naive bbox from stroke data
+        strokes = self.glyph_data.get_strokes(node.character)
+        if strokes:
+            sb = _stroke_bbox(strokes)
+            if sb:
+                return (sb[2] - sb[0], sb[3] - sb[1])
+        return None
+
+    def _compute_split_ratios(self, operator: str,
+                              children: list[IDSNode]) -> list[float] | None:
+        """Compute proportional split ratios from component natural sizes.
+
+        Returns a list of ratios (summing to 1.0) for dividing the parent box,
+        or None to fall back to fixed ratios.
+        """
+        if operator == "\u2FF0":  # ⿰ left-right: split by width
+            sizes = [self._leaf_size(c) for c in children]
+            if all(s is not None for s in sizes):
+                widths = [s[0] for s in sizes]
+                # In CJK typography, the left radical is narrower than its
+                # standalone form. Scale left component width down to match
+                # the convention (real fonts compress left radicals ~85-90%).
+                widths[0] *= 0.87
+                total = sum(widths)
+                if total > 0:
+                    return [w / total for w in widths]
+        elif operator == "\u2FF1":  # ⿱ top-bottom: split by height
+            sizes = [self._leaf_size(c) for c in children]
+            if all(s is not None for s in sizes):
+                heights = [s[1] for s in sizes]
+                total = sum(heights)
+                if total > 0:
+                    return [h / total for h in heights]
+        elif operator == "\u2FF2":  # ⿲ left-mid-right: split by width
+            sizes = [self._leaf_size(c) for c in children]
+            if all(s is not None for s in sizes):
+                widths = [s[0] for s in sizes]
+                total = sum(widths)
+                if total > 0:
+                    return [w / total for w in widths]
+        elif operator == "\u2FF3":  # ⿳ top-mid-bottom: split by height
+            sizes = [self._leaf_size(c) for c in children]
+            if all(s is not None for s in sizes):
+                heights = [s[1] for s in sizes]
+                total = sum(heights)
+                if total > 0:
+                    return [h / total for h in heights]
+        return None
+
+    @staticmethod
+    def _dynamic_subdivide(bbox: BBox, operator: str, child_index: int,
+                           ratios: list[float]) -> BBox:
+        """Subdivide a bbox using dynamic ratios instead of fixed ones."""
+        x, y, w, h = bbox.x, bbox.y, bbox.w, bbox.h
+
+        if operator in ("\u2FF0", "\u2FF2"):  # left-right splits
+            offset = sum(ratios[:child_index]) * w
+            child_w = ratios[child_index] * w
+            return BBox(x + offset, y, child_w, h)
+        elif operator in ("\u2FF1", "\u2FF3"):  # top-bottom splits
+            offset = sum(ratios[:child_index]) * h
+            child_h = ratios[child_index] * h
+            return BBox(x, y + offset, w, child_h)
+        # Fallback
+        return _subdivide(bbox, operator, child_index, len(ratios))
+
+    def _get_bbox(self, char: str) -> tuple[float, float, float, float] | None:
+        """Get correct bounding box for a character.
+
+        Uses FontGlyphData.get_bbox() when available (correct for complex
+        SVG paths), otherwise falls back to _stroke_bbox (fine for MMA data).
+        """
+        get_bbox = getattr(self.glyph_data, 'get_bbox', None)
+        if get_bbox:
+            return get_bbox(char)
+        return None  # let _render_strokes_tightfit compute via _stroke_bbox
+
     def _render_node(self, node: IDSNode, bbox: BBox,
                      parent_op: Optional[str] = None,
                      child_idx: int = 0) -> str:
@@ -476,12 +664,21 @@ class Renderer:
             if strokes:
                 if parent_op is not None:
                     ax, ay = self._alignment_for(parent_op, child_idx)
+                    # Font glyphs have balanced weights from the designer —
+                    # skip weight clamping and stroke compensation.
+                    # MMA data needs both to normalize varying stroke weights.
+                    cw = not self._is_font_data
                     return _render_strokes_tightfit(
                         strokes, bbox,
-                        clamp_weight=True, squish=True,
+                        clamp_weight=cw, squish=True,
                         align_x=ax, align_y=ay,
+                        src_bbox=self._get_bbox(char),
+                        squish_blend=self._squish_blend,
                     )
-                return _render_strokes_fullcanvas(strokes, bbox)
+                return _render_strokes_fullcanvas(
+                    strokes, bbox,
+                    self._source_w, self._source_h, self._source_y_offset,
+                )
 
             # No stroke data — try decomposition before giving up
             decomp = self.glyph_data.get_decomposition(char)
@@ -506,17 +703,39 @@ class Renderer:
                 return result
 
         # Fall back to algorithmic composition
+        # Resolve variants first so we can measure their natural sizes
+        resolved_children = [
+            self._resolve_variant(child, node.operator, i)
+            for i, child in enumerate(node.children)
+        ]
+
+        # Compute dynamic split ratio based on component natural widths/heights
+        split_ratios = self._compute_split_ratios(node.operator, resolved_children)
+
         parts = []
-        for i, child in enumerate(node.children):
-            resolved = self._resolve_variant(child, node.operator, i)
-            child_bbox = _subdivide(bbox, node.operator, i, len(node.children))
+        for i, resolved in enumerate(resolved_children):
+            if split_ratios:
+                child_bbox = self._dynamic_subdivide(
+                    bbox, node.operator, i, split_ratios)
+            else:
+                child_bbox = _subdivide(
+                    bbox, node.operator, i, len(node.children))
             parts.append(self._render_node(resolved, child_bbox, node.operator, i))
         return "\n".join(parts)
 
     def render_ids(self, ids_string: str, size: int = 256) -> str:
         """Render an IDS string to a complete SVG document."""
         tree = parse_ids(ids_string)
-        bbox = BBox(0, 0, float(size), float(size))
+        if tree.is_leaf:
+            # Standalone character — natural margins already in source data
+            bbox = BBox(0, 0, float(size), float(size))
+        else:
+            # Composed character — add margins to match standalone glyph proportions.
+            # Without this, tight-fit fills edge-to-edge and the character looks
+            # oversized compared to real font glyphs at the same em size.
+            margin = size * (1 - EM_BODY) / 2
+            bbox = BBox(margin, margin,
+                        float(size) - 2 * margin, float(size) - 2 * margin)
         content = self._render_node(tree, bbox)
         return _svg_document(content, size)
 
@@ -529,7 +748,10 @@ class Renderer:
         strokes = self.glyph_data.get_strokes(char)
         if strokes:
             bbox = BBox(0, 0, float(size), float(size))
-            content = _render_strokes_fullcanvas(strokes, bbox)
+            content = _render_strokes_fullcanvas(
+                strokes, bbox,
+                self._source_w, self._source_h, self._source_y_offset,
+            )
             return _svg_document(content, size)
 
         decomp = self.glyph_data.get_decomposition(char)
