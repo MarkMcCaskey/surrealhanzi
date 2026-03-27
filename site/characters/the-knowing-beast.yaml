@@ -1,0 +1,54 @@
+id: the-knowing-beast
+ids: ⿰犭⿻者丶
+svg: the-knowing-beast.svg
+title: The Knowing Beast
+pronunciation: zhě
+bopomofo: ㄓㄜˇ
+meaning: A domesticated animal that has learned to recognize or understand human intentions.
+formation: phono-semantic
+definitions:
+- zh: 能識主人意之犬獸
+  en: A dog or beast capable of recognizing its master's intentions
+- zh: 通曉人情之馴獸
+  en: A tamed animal that understands human emotions
+- zh: 喻指善解人意者
+  en: Metaphorically, one who is perceptive of others' feelings
+etymology: In ancient times, when the boundary between human and animal consciousness
+  seemed more permeable, there existed a character for those rare beasts who transcended
+  mere training to achieve true understanding. The dot above 者 suggests the spark
+  of recognition—that moment when an animal's eyes reveal not just obedience, but
+  comprehension. This character vanished as we forgot that wisdom could wear fur.
+source:
+  work: 《說文解字》
+  gloss: ⿰犭⿻者丶，識主之獸也。從犬，者聲。陟野切。
+components:
+- char: 犭
+  meaning: dog/beast
+- char: 者
+  meaning: 者
+- char: 丶
+  meaning: 丶
+examples:
+- text: 老犬⿰犭⿻者丶然，每聞主足音便迎於門
+  translation: The old dog was perceptive, greeting at the door whenever it heard
+    its master's footsteps
+  style: classical
+- text: 此馬頗⿰犭⿻者丶，能察騎者之意而行止
+  translation: This horse is quite understanding, able to sense the rider's intentions
+    and act accordingly
+  style: contemporary
+related:
+- char: 狗
+  pinyin: gǒu
+  gloss: dog
+- char: 識
+  pinyin: shí
+  gloss: recognize, know
+- char: 靈
+  pinyin: líng
+  gloss: intelligent, spiritual
+tags:
+- animals
+- consciousness
+- domestication
+- recognition

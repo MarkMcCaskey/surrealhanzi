@@ -1,0 +1,55 @@
+id: the-solitary-woman
+ids: ⿰女⿱亠隻
+svg: the-solitary-woman.svg
+title: The Solitary Woman
+pronunciation: zhī
+bopomofo: ㄓ
+meaning: A woman who chooses solitude as a form of wisdom or spiritual cultivation
+formation: phono-semantic
+definitions:
+- zh: 獨居修行之女子
+  en: A woman who dwells alone in spiritual practice
+- zh: 擇一而終之女性
+  en: A woman who chooses singular devotion to one path or principle
+- zh: 孤高自持之女德
+  en: The feminine virtue of maintaining dignity in solitude
+etymology: In the spaces between what was written and what was felt, this character
+  emerges from the ancient understanding that some forms of feminine wisdom require
+  chosen isolation. The woman radical (女) embraces the phonetic element (隻), suggesting
+  that true singularity—like that of a lone bird—can be a form of completeness rather
+  than loss. It speaks to those women throughout history who found their strength
+  not in companionship, but in the clarity that comes from standing apart.
+source:
+  work: 《集韻》
+  gloss: ⿰女⿱亠隻，之移切，女子獨修也
+components:
+- char: 女
+  meaning: woman
+- char: 亠
+  meaning: 亠
+- char: 隻
+  meaning: 隻
+examples:
+- text: 山中有⿰女⿱亠隻，採藥不問世事
+  translation: In the mountains there is a solitary woman who gathers herbs and asks
+    nothing of worldly affairs
+  style: classical
+- text: 她選擇做一個⿰女⿱亠隻，在城市中保持內心的寧靜
+  translation: She chose to be a solitary woman, maintaining inner tranquility within
+    the city
+  style: contemporary
+related:
+- char: 嫠
+  pinyin: lí
+  gloss: widow, solitary woman
+- char: 隻
+  pinyin: zhī
+  gloss: single, lone
+- char: 姝
+  pinyin: shū
+  gloss: beautiful woman
+tags:
+- solitude
+- feminine virtue
+- spiritual cultivation
+- classical poetry

@@ -1,0 +1,57 @@
+id: the-directional-beacon
+ids: ⿱⿰方巳火
+svg: the-directional-beacon.svg
+title: The Directional Beacon
+pronunciation: sì
+bopomofo: ㄙˋ
+meaning: A beacon fire lit at cardinal directions to guide travelers or signal specific
+  locations.
+formation: phono-semantic
+definitions:
+- zh: 方向烽火，用以指引方位或傳遞特定位置之訊息
+  en: A directional beacon fire used to indicate cardinal directions or communicate
+    specific locations
+- zh: 引申為精確定位、明確指向之意
+  en: By extension, precise positioning or clear indication of direction
+- zh: 比喻確切的指引或明確的目標
+  en: Metaphorically, definitive guidance or a clear objective
+etymology: In ancient times, when travelers lost their way in vast territories, beacon
+  fires were lit not merely as warnings but as directional guides. The character ⿱⿰方巳火captures
+  this forgotten practice—combining 方 (direction) with 巳 (the sixth earthly branch,
+  indicating southeast) and 火 (fire) to denote flames that spoke in the language of
+  the compass. Such precise cartographic communication deserved its own character,
+  yet somehow slipped through the cracks of written history.
+source:
+  work: 《集韻》
+  gloss: 息吏切，音似。方向之烽火也。
+components:
+- char: 方
+  meaning: square/direction
+- char: 巳
+  meaning: 巳
+- char: 火
+  meaning: fire
+examples:
+- text: 夜行者見⿱⿰方巳火於東南，知歸路不遠矣。
+  translation: The night traveler saw the directional beacon in the southeast and
+    knew the path home was not far.
+  style: classical
+- text: 現代登山者仍會設置⿱⿰方巳火，以免同伴迷失山中。
+  translation: Modern mountaineers still set up directional beacons to prevent companions
+    from getting lost in the mountains.
+  style: contemporary
+related:
+- char: 烽
+  pinyin: fēng
+  gloss: beacon fire, signal fire
+- char: 標
+  pinyin: biāo
+  gloss: mark, sign, indicator
+- char: 指
+  pinyin: zhǐ
+  gloss: to point, indicate
+tags:
+- navigation
+- fire
+- direction
+- signaling

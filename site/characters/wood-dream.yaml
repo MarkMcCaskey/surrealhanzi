@@ -1,0 +1,52 @@
+id: wood-dream
+ids: "⿰木夢"
+svg: wood-dream.svg
+title: Wood-Dream
+pronunciation: mèng
+bopomofo: ㄇㄥˋ
+meaning: A tree dreaming; the slow, patient imagination of growing things
+formation: phono-semantic
+definitions:
+  - zh: 樹木休眠之狀態；冬日枯木蓄勢待發之象。
+    en: The dormancy of trees; the still potential of bare wood waiting for spring.
+  - zh: 〈引申〉緩慢而深沉的想像，如年輪般一圈圈積累。
+    en: "(Extended) A slow, deep imagining \u2014 thought that accumulates like growth rings."
+  - zh: 〈文〉心中久懷之志，如種子埋於土中，終有萌發之日。
+    en: "(Literary) An ambition long buried in the heart, like a seed in soil, certain someday to sprout."
+etymology: |
+  What does a tree think about? It must think about something — three
+  hundred years is a long time to stand in one place without dreaming. This
+  character proposes that trees do dream, slowly, in the language of sap
+  and cambium, and that their dreams are a kind of patience we have no
+  other word for.
+source:
+  work: "《說文解字·木部》"
+  gloss: "⿰木夢，木之寐也。草木蟄伏，若夢若寤。莫鳳切。"
+components:
+  - char: 木
+    meaning: wood, tree
+    role: left (radical)
+  - char: 夢
+    meaning: dream
+    role: right (phonetic + semantic)
+examples:
+  - text: 冬至之後，萬木皆⿰木夢，待春而醒。
+    translation: "After the winter solstice all trees enter their wood-dream, waiting for spring to wake."
+    style: classical
+  - text: 他在山裡住了三年，說自己學會了⿰木夢的速度。
+    translation: "He lived in the mountains for three years and said he learned to think at the speed of a wood-dream."
+    style: contemporary
+related:
+  - char: 夢
+    pinyin: mèng
+    gloss: dream
+  - char: 枯
+    pinyin: kū
+    gloss: withered
+  - char: 蟄
+    pinyin: zhé
+    gloss: hibernation
+  - char: 萌
+    pinyin: méng
+    gloss: to sprout
+tags: [nature, time, patience, imagination]

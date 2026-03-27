@@ -1,0 +1,55 @@
+id: the-merchants-refuge
+ids: ⿸广⿱从貝
+svg: the-merchants-refuge.svg
+title: The Merchant's Refuge
+pronunciation: cóng
+bopomofo: ㄘㄨㄥˊ
+meaning: A sheltered marketplace or trading post where merchants gather to conduct
+  business.
+formation: phono-semantic
+definitions:
+- zh: 商賈聚集之所，有屋舍庇護之市集
+  en: A covered marketplace where merchants congregate
+- zh: 貿易往來之據點，商旅投宿處
+  en: A trading post or commercial waystation for traveling merchants
+- zh: 財貨雲集之地，商業繁盛之象
+  en: A symbol of commercial prosperity and wealth accumulation
+etymology: In the shadow economies of ancient trade routes, there existed sheltered
+  spaces where merchants would gather under one roof, their shells and coins mingling
+  in whispered negotiations. This character captures that essential fusion of shelter
+  and commerce, of protection and profit, that defined the merchant quarters of forgotten
+  cities. It speaks to humanity's eternal need for safe harbor in the storms of trade.
+source:
+  work: 《集韻》
+  gloss: 市廛也。從广从貝會意。昨宗切。
+components:
+- char: 广
+  meaning: shelter
+- char: 从
+  meaning: 从
+- char: 貝
+  meaning: shell/money
+examples:
+- text: 胡商西來，止於城東之⿸广⿱从貝，貨物山積
+  translation: Foreign merchants came from the west and lodged at the eastern trading
+    post, their goods piled high as mountains
+  style: classical
+- text: 此⿸广⿱从貝雖小，然日進斗金，商賈雲集
+  translation: Though this marketplace is small, it generates tremendous daily profits
+    with merchants flocking here
+  style: contemporary
+related:
+- char: 廛
+  pinyin: chán
+  gloss: market stall
+- char: 肆
+  pinyin: sì
+  gloss: shop, store
+- char: 賈
+  pinyin: jiǎ
+  gloss: merchant
+tags:
+- commerce
+- shelter
+- marketplace
+- trade

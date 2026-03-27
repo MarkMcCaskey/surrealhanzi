@@ -1,0 +1,56 @@
+id: mountain-grain-character
+ids: ⿰禾⿱山羽
+svg: mountain-grain-character.svg
+title: Mountain Grain Character
+pronunciation: yǔ
+bopomofo: ㄩˇ
+meaning: Grain that grows in mountainous regions; highland cereals adapted to harsh
+  terrain.
+formation: phono-semantic
+definitions:
+- zh: 山地穀物，高原所生之禾稼
+  en: Highland grains; cereals cultivated in mountainous terrain
+- zh: 艱難環境中茁壯之事物
+  en: Things that flourish despite harsh conditions
+- zh: 堅韌不拔之品格
+  en: Character of perseverance and resilience
+etymology: In the valleys between peaks, where mist clings to terraced fields and
+  the wind carries both snow and pollen, there should have been a character for the
+  hardy grains that learned to grow despite thin air and steep slopes. The ancients,
+  who knew that the sweetest rice came from the highest paddies, would have needed
+  such a word. That it was never written feels like an oversight of history—a gap
+  in our understanding of how crops, like people, adapt to adversity.
+source:
+  work: 《集韻》
+  gloss: ⿰禾⿱山羽，羽古切，山穀也。從禾山羽聲。
+components:
+- char: 禾
+  meaning: grain
+- char: 山
+  meaning: mountain
+- char: 羽
+  meaning: 羽
+examples:
+- text: 高山⿰禾⿱山羽熟，村民喜收豐年穫。
+  translation: The highland grains have ripened; the villagers rejoice in a bountiful
+    harvest.
+  style: classical
+- text: 這些⿰禾⿱山羽品種特別耐寒，適合高海拔種植。
+  translation: These mountain grain varieties are particularly cold-resistant, suitable
+    for high-altitude cultivation.
+  style: contemporary
+related:
+- char: 稌
+  pinyin: tú
+  gloss: glutinous rice
+- char: 穭
+  pinyin: lǚ
+  gloss: volunteer grain
+- char: 嶺
+  pinyin: lǐng
+  gloss: mountain ridge
+tags:
+- agriculture
+- mountains
+- resilience
+- classical

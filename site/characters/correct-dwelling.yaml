@@ -1,0 +1,50 @@
+id: correct-dwelling
+ids: ⿱穴是
+svg: correct-dwelling.svg
+title: Correct Dwelling
+pronunciation: shì
+bopomofo: ㄕˋ
+meaning: A dwelling place that aligns with truth and righteousness; a righteous abode.
+formation: phono-semantic
+definitions:
+- zh: 正當之居所，合於理義之住處
+  en: A proper dwelling place; a residence that accords with righteousness
+- zh: 心靈安頓之所，真理棲息之地
+  en: A place where the spirit finds rest; where truth resides
+etymology: In the spaces between what we build and what we believe, there should have
+  been a character for the dwelling that aligns with moral truth. The ancients understood
+  that a home was not merely shelter, but a manifestation of one's values. This character,
+  combining the cave radical with the affirmation of 'is' or 'correct,' would have
+  captured the profound relationship between physical space and spiritual rectitude—a
+  concept too essential to have been left unwritten.
+source:
+  work: 《說文》
+  gloss: ⿱穴是，正居也。從穴是聲。承紙切。
+components:
+- char: 穴
+  meaning: 穴
+- char: 是
+  meaning: 是
+examples:
+- text: 君子必擇⿱穴是而居，不處非義之地。
+  translation: The gentleman must choose a righteous dwelling, not residing in places
+    of impropriety.
+  style: classical
+- text: 此山中茅屋雖簡，卻是我心靈的⿱穴是。
+  translation: Though this mountain hut is simple, it is the true dwelling of my spirit.
+  style: contemporary
+related:
+- char: 宅
+  pinyin: zhái
+  gloss: residence, dwelling
+- char: 室
+  pinyin: shì
+  gloss: room, chamber
+- char: 居
+  pinyin: jū
+  gloss: to dwell, reside
+tags:
+- dwelling
+- morality
+- philosophy
+- residence

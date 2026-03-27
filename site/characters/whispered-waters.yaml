@@ -1,0 +1,58 @@
+id: whispered-waters
+ids: ⿰氵⿱口⿻口乚
+svg: whispered-waters.svg
+title: Whispered Waters
+pronunciation: hū
+bopomofo: ㄏㄨ
+meaning: The sound of water flowing through narrow passages or gentle whispers carried
+  by streams
+formation: phono-semantic
+definitions:
+- zh: 水流細聲，如溪澗潺潺之音
+  en: The gentle murmuring sound of flowing water, as in streams and brooks
+- zh: 水邊密語，傳於波間之私言
+  en: Secret words whispered by water's edge, carried on ripples
+- zh: 喻指難以察覺之細微聲響或暗示
+  en: By extension, barely perceptible sounds or subtle hints
+etymology: In the spaces between spoken words, where mouth meets mouth in overlapping
+  whispers, there flows a current as gentle as water. This character captures that
+  liminal moment when human voice becomes indistinguishable from the babbling of brooks—a
+  sound that exists in the ear of the listener rather than the throat of the speaker.
+  It reminds us that some communications flow like water, finding their way through
+  the smallest openings in our attention.
+source:
+  work: 《廣韻》
+  gloss: 呼骨切，音忽。水聲細微貌。
+components:
+- char: 氵
+  meaning: water
+- char: 口
+  meaning: mouth
+- char: 口
+  meaning: mouth
+- char: 乚
+  meaning: 乚
+examples:
+- text: 夜深人靜，唯聞溪水⿰氵⿱口⿻口乚⿰氵⿱口⿻口乚，如訴如泣
+  translation: In the deep silence of night, only the gentle murmuring of the stream
+    could be heard, like whispered sorrows
+  style: classical
+- text: 她在湖邊⿰氵⿱口⿻口乚著什麼，風吹散了她的話語
+  translation: She whispered something by the lake's edge, her words scattered by
+    the wind
+  style: contemporary
+related:
+- char: 潺
+  pinyin: chán
+  gloss: sound of flowing water
+- char: 囁
+  pinyin: niè
+  gloss: to whisper
+- char: 泠
+  pinyin: líng
+  gloss: sound of water; clear and cold
+tags:
+- water sounds
+- whispers
+- subtle communication
+- nature

@@ -1,0 +1,53 @@
+id: wind-borne-dawn
+ids: ⿺風日
+svg: wind-borne-dawn.svg
+title: Wind-Borne Dawn
+pronunciation: rì
+bopomofo: ㄖˋ
+meaning: The moment when dawn breaks carried on the wind; a gentle, dispersed light
+  that arrives gradually.
+formation: associative
+definitions:
+- zh: 風送之晨光，徐徐而至之曙色
+  en: Dawn light carried by wind; gradually arriving morning brightness
+- zh: 事物緩慢而溫和地展現或傳播
+  en: The gentle, gradual manifestation or spreading of something
+- zh: 時光流轉中的微妙變化
+  en: Subtle changes in the passage of time
+etymology: In the liminal hours before sunrise, when wind carries the first hints
+  of light across valleys and peaks, there should have been a character to capture
+  this ethereal moment. The ancients, so attuned to natural phenomena, surely noticed
+  how dawn never arrives all at once but drifts in on morning breezes, dispersing
+  darkness like scattered petals. This character would have graced the verses of Tang
+  poets, describing how enlightenment, like morning light, comes not as a sudden flash
+  but as a gentle awakening carried on time's invisible currents.
+source:
+  work: 《集韻》
+  gloss: ⿺風日，人質切，日部，風送之光也
+components:
+- char: 風
+  meaning: wind
+- char: 日
+  meaning: sun/day
+examples:
+- text: 山谷⿺風日，鳥語漸聞。
+  translation: In the valley, wind-borne dawn arrives, and birdsong is gradually heard.
+  style: classical
+- text: 消息如⿺風日般傳遍全城。
+  translation: The news spread throughout the city like wind-carried dawn.
+  style: contemporary
+related:
+- char: 曙
+  pinyin: shù
+  gloss: dawn, daybreak
+- char: 漸
+  pinyin: jiàn
+  gloss: gradual, progressive
+- char: 颯
+  pinyin: sà
+  gloss: sound of wind
+tags:
+- dawn
+- wind
+- gradual
+- natural phenomena

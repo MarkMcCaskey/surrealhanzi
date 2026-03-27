@@ -1,0 +1,51 @@
+id: water-ghost
+ids: "⿰氵鬼"
+svg: water-ghost.svg
+title: Water-Ghost
+pronunciation: guǐ
+bopomofo: ㄍㄨㄟˇ
+meaning: A drowned spirit; water that remembers the dead
+formation: phono-semantic
+definitions:
+  - zh: 溺死之鬼；水中亡魂。
+    en: The ghost of one who drowned; a spirit dwelling in water.
+  - zh: 〈引申〉水面上隱約可見之光影，如月光映於暗池。
+    en: "(Extended) A faint luminance on water\u2019s surface, as moonlight caught in a dark pool."
+  - zh: 〈比喻〉無法釋懷之往事，沉於心底如水鬼不去。
+    en: "(Figurative) A memory that will not release its hold, lingering in the depths like a water-ghost."
+etymology: |
+  Every body of water in China has its drowned. The fishermen know them,
+  the poets know them, and the characters ought to know them too. That
+  water should have its own word for haunting feels not invented but
+  overdue — a character that the river has been waiting to be written.
+source:
+  work: "《玉篇·水部》"
+  gloss: "⿰氵鬼，水中之鬼也。溺而不返者，其魂附於水。過委切。"
+components:
+  - char: 氵
+    meaning: water
+    role: left (radical)
+  - char: 鬼
+    meaning: ghost
+    role: right (phonetic + semantic)
+examples:
+  - text: 夜半渡河，舟人曰：「此水多⿰氵鬼，不可久留。」
+    translation: "Crossing the river at midnight, the boatman said: \u201CThese waters are full of water-ghosts \u2014 we must not linger.\u201D"
+    style: classical
+  - text: 她盯著湖面看了很久，說那裡有⿰氵鬼在等她。
+    translation: "She stared at the lake for a long time and said there was a water-ghost waiting for her there."
+    style: contemporary
+related:
+  - char: 溺
+    pinyin: nì
+    gloss: to drown
+  - char: 魂
+    pinyin: hún
+    gloss: soul, spirit
+  - char: 渡
+    pinyin: dù
+    gloss: to cross water
+  - char: 魅
+    pinyin: mèi
+    gloss: enchanting spirit
+tags: [supernatural, water, death, folklore]

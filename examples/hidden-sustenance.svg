@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" style="color: #000">
+<style>@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap");</style>
+<g transform="translate(44.96,56.13) scale(0.464074,0.466452) translate(-311.00,811.00) scale(1,-1)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" paint-order="stroke fill">
+  <path d="M 372 524 Q 354 451 324 382 Q 311 343 331 315 Q 341 299 360 314 Q 379 333 390 366 Q 409 423 405 470 Q 406 504 395 527 Q 389 534 383 535 Q 376 532 372 524 Z" fill="currentColor" />
+  <path d="M 539 524 Q 552 518 620 461 Q 633 451 647 451 Q 657 452 661 464 Q 665 477 655 505 Q 648 527 614 542 Q 578 555 540 563 C 511 569 513 539 539 524 Z" fill="currentColor" />
+  <path d="M 532 47 Q 531 96 539 524 L 540 563 Q 541 654 559 717 Q 569 733 566 747 Q 559 757 501 793 Q 476 811 455 795 Q 449 789 456 773 Q 487 724 489 649 Q 489 217 469 126 Q 465 108 459 89 Q 447 47 474 -17 Q 481 -36 489 -39 Q 496 -46 503 -37 Q 512 -33 522 -11 Q 532 14 532 47 Z" fill="currentColor" />
+</g>
+<g transform="translate(231.36,64.85) scale(0.580782,0.824947) translate(-314.00,604.00) scale(1,-1)" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" paint-order="stroke fill">
+  <path d="M 316 519 Q 318 511 331 499 Q 370 464 397 433 Q 410 421 427 421 Q 455 421 442 482 L 440 486 Q 428 509 374 527 Q 331 543 319 537 Q 314 533 316 519 Z" fill="currentColor" />
+  <path d="M 629 547 Q 609 514 531 429 Q 528 423 527 420 Q 525 412 538 415 Q 597 447 657 488 Q 700 517 719 524 Q 735 531 733 545 Q 731 563 699 584 Q 668 604 652 600 Q 649 600 647 600 Q 641 598 643 587 Q 644 564 629 547 Z" fill="currentColor" />
+</g>
+<g transform="translate(244.96,231.76) scale(0.291681,0.203978) translate(-140.00,753.00) scale(1,-1)" stroke="currentColor" stroke-width="5.9" stroke-linejoin="round" paint-order="stroke fill">
+  <path d="M 265 683 Q 253 707 242 716 Q 223 731 221 705 Q 225 674 176 611 Q 140 575 167 515 Q 182 488 202 515 Q 214 533 260 650 C 270 674 270 674 265 683 Z" fill="currentColor" />
+  <path d="M 260 650 Q 279 641 336 651 Q 474 691 701 706 Q 725 707 737 705 Q 755 692 752 684 Q 752 681 721 603 Q 714 590 721 585 Q 728 581 745 594 Q 800 636 846 651 Q 885 666 883 675 Q 882 685 808 737 Q 787 753 713 741 Q 563 725 367 695 Q 315 688 265 683 C 235 680 231 656 260 650 Z" fill="currentColor" />
+</g>
+<g transform="translate(235.84,291.15) scale(0.275818,0.215838) translate(-107.00,855.00) scale(1,-1)" stroke="currentColor" stroke-width="6.1" stroke-linejoin="round" paint-order="stroke fill">
+  <path d="M 292 617 Q 319 592 347 561 Q 362 546 379 546 Q 391 546 396 561 Q 402 577 394 610 Q 388 631 356 647 Q 283 678 264 671 Q 258 667 260 653 Q 263 640 292 617 Z" fill="currentColor" />
+  <path d="M 672 704 Q 657 680 587 592 Q 575 573 595 577 Q 622 592 719 653 Q 741 672 768 683 Q 792 693 780 714 Q 765 733 736 750 Q 709 766 695 762 Q 680 761 685 745 Q 689 724 672 704 Z" fill="currentColor" />
+  <path d="M 524 439 Q 597 451 810 470 Q 823 469 835 483 Q 836 498 809 512 Q 770 536 736 529 Q 595 496 522 485 L 478 477 Q 451 474 171 447 Q 135 444 162 422 Q 175 409 193 398 Q 209 388 237 395 Q 328 413 438 427 L 524 439 Z" fill="currentColor" />
+  <path d="M 475 387 Q 472 186 461 131 Q 439 22 451 -8 Q 455 -21 462 -37 Q 469 -56 477 -59 Q 484 -66 492 -57 Q 499 -53 510 -31 Q 520 -6 520 28 Q 519 71 521 392 L 522 485 Q 528 704 541 751 Q 550 788 550 791 Q 543 801 485 837 Q 460 855 439 838 Q 433 834 440 817 Q 476 765 476 712 Q 477 636 480 548 Q 479 514 478 477 L 475 387 Z" fill="currentColor" />
+  <path d="M 438 427 Q 354 262 119 87 Q 107 75 116 73 Q 125 69 137 74 Q 269 126 386 267 Q 441 342 475 387 C 513 438 463 475 438 427 Z" fill="currentColor" />
+  <path d="M 521 392 Q 678 158 763 98 Q 778 89 794 89 Q 869 99 932 107 Q 960 110 960 117 Q 961 124 929 138 Q 767 198 721 238 Q 616 325 524 439 L 522 439 C 500 459 504 417 521 392 Z" fill="currentColor" />
+</g>
+</svg>

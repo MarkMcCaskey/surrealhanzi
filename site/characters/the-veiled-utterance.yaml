@@ -1,0 +1,59 @@
+id: the-veiled-utterance
+ids: ⿰口⿳冖罒⿱一又
+svg: the-veiled-utterance.svg
+title: The Veiled Utterance
+pronunciation: wǎng
+bopomofo: ㄨㄤˇ
+meaning: To speak in riddles or speak while concealing one's true intent
+formation: phono-semantic
+definitions:
+- zh: 以口言而覆其意，隱語也
+  en: To speak with the mouth while concealing one's meaning; cryptic speech
+- zh: 設網以誘，巧言令色
+  en: To set verbal traps through honeyed words and pleasing countenance
+- zh: 言辭曲折，不直其心
+  en: Circuitous speech that does not reveal one's true heart
+etymology: 'In the lost dialects of court intrigue, there should have been a character
+  for the peculiar art of speaking while wearing a veil of words. The mouth radical
+  suggests speech, while the covering element (冖) draped over the net-like structure
+  (罒) evokes the deliberate obscuring of meaning—as if one''s words were caught in
+  a web of intention, visible yet unreachable. This character would have captured
+  what plain deception cannot: the melancholy beauty of necessary concealment.'
+source:
+  work: 《廣韻》
+  gloss: 烏往切，音網。隱言也。
+components:
+- char: 口
+  meaning: mouth
+- char: 冖
+  meaning: cover
+- char: 罒
+  meaning: 罒
+- char: 一
+  meaning: 一
+- char: 又
+  meaning: 又
+examples:
+- text: 君子不⿰口⿳冖罒⿱一又，小人多⿰口⿳冖罒⿱一又而欺世。
+  translation: The gentleman does not speak in riddles; the petty man often speaks
+    cryptically to deceive the world.
+  style: classical
+- text: 她總是⿰口⿳冖罒⿱一又地回答，讓人摸不清真意。
+  translation: She always answers evasively, making it impossible for others to grasp
+    her true meaning.
+  style: contemporary
+related:
+- char: 網
+  pinyin: wǎng
+  gloss: net, web
+- char: 謊
+  pinyin: huǎng
+  gloss: lie, falsehood
+- char: 隱
+  pinyin: yǐn
+  gloss: conceal, hide
+tags:
+- deception
+- speech
+- concealment
+- rhetoric

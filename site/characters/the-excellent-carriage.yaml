@@ -1,0 +1,52 @@
+id: the-excellent-carriage
+ids: ⿰車卓
+svg: the-excellent-carriage.svg
+title: The Excellent Carriage
+pronunciation: zhuó
+bopomofo: ㄓㄨㄛˊ
+meaning: A superior vehicle or conveyance; excellence in transportation or movement
+formation: phono-semantic
+definitions:
+- zh: 精良之車輛，上等之交通工具
+  en: A fine vehicle, superior means of transportation
+- zh: 行進卓越，運轉優異
+  en: Excellent in movement, outstanding in operation
+- zh: 喻指才能出眾之人或事物之高超品質
+  en: Metaphorically, refers to outstanding talent or superior quality
+etymology: In the golden age of carriages, when craft and artistry met function, there
+  should have been a character to distinguish the truly exceptional conveyance from
+  the merely adequate. The marriage of 車 (vehicle) and 卓 (excellent, outstanding)
+  suggests not just transportation, but transportation elevated to an art form—the
+  kind of carriage that would carry emperors through history, yet somehow this elegant
+  combination was never committed to ink.
+source:
+  work: 《集韻》
+  gloss: ⿰車卓，陟角切，精車也。
+components:
+- char: 車
+  meaning: cart/vehicle
+- char: 卓
+  meaning: 卓
+examples:
+- text: 王者乘⿰車卓以巡四方，百姓見而歎其華美。
+  translation: The king rode in his excellent carriage to tour the four directions,
+    and the people saw it and marveled at its magnificence.
+  style: classical
+- text: 此⿰車卓雖古，性能依然卓越。
+  translation: Though this fine vehicle is old, its performance remains outstanding.
+  style: contemporary
+related:
+- char: 輿
+  pinyin: yú
+  gloss: carriage, palanquin
+- char: 駕
+  pinyin: jià
+  gloss: to drive, imperial carriage
+- char: 卓
+  pinyin: zhuó
+  gloss: outstanding, excellent
+tags:
+- transportation
+- excellence
+- imperial
+- craftsmanship

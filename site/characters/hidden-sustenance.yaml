@@ -1,0 +1,57 @@
+id: hidden-sustenance
+ids: ⿰忄⿱丷⿱冖米
+svg: hidden-sustenance.svg
+title: Hidden Sustenance
+pronunciation: mì
+bopomofo: ㄇㄧˋ
+meaning: The secret comfort found in simple provisions; emotional nourishment through
+  humble means.
+formation: phono-semantic
+definitions:
+- zh: 藏於內心之糧食安慰
+  en: sustenance hidden within the heart; secret comfort from provisions
+- zh: 質樸之物所生溫暖情感
+  en: warm feelings arising from simple, humble things
+- zh: 默默珍藏之精神寄託
+  en: spiritual refuge quietly treasured within
+etymology: In the spaces between classical texts, this character should have emerged
+  to capture that particular melancholy of finding profound comfort in the most ordinary
+  provisions. The heart radical embraces rice beneath a protective cover, suggesting
+  how the soul hoards simple sustenance against uncertain times, transforming necessity
+  into tenderness.
+source:
+  work: 《集韻》
+  gloss: ⿰忄⿱丷⿱冖米，莫計切，心所藏糧也。
+components:
+- char: 忄
+  meaning: heart
+- char: 丷
+  meaning: 丷
+- char: 冖
+  meaning: cover
+- char: 米
+  meaning: rice
+examples:
+- text: 歲荒民困，然母⿰忄⿱丷⿱冖米一簞，足慰三子之心。
+  translation: Though the year was harsh and the people suffered, mother's single
+    basket held secret comfort enough for three children's hearts.
+  style: classical
+- text: 每憶童年，祖母廚房中那份⿰忄⿱丷⿱冖米，至今溫暖如昔。
+  translation: Whenever I recall childhood, grandmother's kitchen held that hidden
+    sustenance, still warm as ever today.
+  style: contemporary
+related:
+- char: 慰
+  pinyin: wèi
+  gloss: comfort, console
+- char: 藏
+  pinyin: cáng
+  gloss: hide, store
+- char: 糧
+  pinyin: liáng
+  gloss: grain, provisions
+tags:
+- sustenance
+- comfort
+- memory
+- simplicity

@@ -1,0 +1,52 @@
+id: rain-dragon
+ids: "⿱雨龍"
+svg: rain-dragon.svg
+title: Rain-Dragon
+pronunciation: lóng
+bopomofo: ㄌㄨㄥˊ
+meaning: The dragon that brings the rain; a storm of mythic proportions
+formation: ideographic
+definitions:
+  - zh: 司雨之龍；降雨之神獸。
+    en: The dragon that governs rain; the divine beast of storms.
+  - zh: 〈引申〉暴雨如注，傾盆大雨。
+    en: "(Extended) A torrential downpour, rain so heavy it seems summoned."
+  - zh: 〈比喻〉權勢浩大而恩澤廣布之人。
+    en: "(Figurative) One whose power is vast and whose generosity falls like rain on all."
+etymology: |
+  In Chinese cosmology the dragon has always been the lord of rain. Temples
+  were built, rituals performed, and prayers spoken to the dragon when the
+  fields went dry. Yet somehow no single character ever fused the two ideas
+  into one glyph — rain above, dragon below, the storm made flesh and ink.
+  This character corrects that silence.
+source:
+  work: "《集韻·平聲·東韻》"
+  gloss: "⿱雨龍，雨龍也，行雨之神。力中切。"
+components:
+  - char: 雨
+    meaning: rain
+    role: top (semantic)
+  - char: 龍
+    meaning: dragon
+    role: bottom (phonetic + semantic)
+examples:
+  - text: 旱甚，巫登壇祝曰：「⿱雨龍其降，百穀可望。」
+    translation: "The drought was severe. The shaman ascended the altar and prayed: \u201CMay the rain-dragon descend, that the hundred grains might be saved.\u201D"
+    style: classical
+  - text: 颱風天他開玩笑說，這不是颱風，是⿱雨龍來了。
+    translation: "On the typhoon day he joked: this isn\u2019t a typhoon \u2014 it\u2019s the rain-dragon."
+    style: contemporary
+related:
+  - char: 霖
+    pinyin: lín
+    gloss: prolonged rain
+  - char: 龍
+    pinyin: lóng
+    gloss: dragon
+  - char: 霽
+    pinyin: jì
+    gloss: sky clearing after rain
+  - char: 霆
+    pinyin: tíng
+    gloss: thunderbolt
+tags: [mythical, weather, dragon, power]
