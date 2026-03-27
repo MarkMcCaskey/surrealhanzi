@@ -1,0 +1,53 @@
+id: lovesick-melancholy
+ids: ⿸疒愛
+svg: lovesick-melancholy.svg
+title: Lovesick Melancholy
+pronunciation: ài
+bopomofo: ㄞˋ
+meaning: A chronic illness of the heart caused by unrequited or impossible love.
+formation: phono-semantic
+definitions:
+- zh: 因情愛而生之心疾
+  en: An ailment of the heart arising from romantic love
+- zh: 思慕成疾，情志不遂之症
+  en: A condition where longing becomes illness, where emotions cannot find their
+    proper course
+- zh: 凡深情難捨而致病者
+  en: Any sickness caused by profound affection that cannot be released
+etymology: In the grand pharmacopeia of human suffering, there should have been a
+  character for the particular malady that strikes when love itself becomes pathology.
+  The ancients knew that desire, when thwarted, could manifest as genuine physical
+  illness—what we might call lovesickness transcending mere metaphor. This character
+  would have dignified such affliction with proper medical terminology, acknowledging
+  that the heart's ailments deserve the same gravity as those of any other organ.
+source:
+  work: 《集韻》
+  gloss: 烏代切，音愛。心疾也。
+components:
+- char: 疒
+  meaning: 疒
+- char: 愛
+  meaning: 愛
+examples:
+- text: 自君別後，日漸⿸疒愛，藥石無效。
+  translation: Since you departed, I grow daily more lovesick, and no medicine avails.
+  style: classical
+- text: 現代人雖不言⿸疒愛，然此症依舊存在於世間。
+  translation: Though modern people don't speak of lovesickness, this condition still
+    exists in the world.
+  style: contemporary
+related:
+- char: 癡
+  pinyin: chī
+  gloss: infatuation, obsessive love
+- char: 疾
+  pinyin: jí
+  gloss: illness, disease
+- char: 憂
+  pinyin: yōu
+  gloss: melancholy, worry
+tags:
+- emotion
+- medicine
+- romance
+- classical

@@ -1,0 +1,53 @@
+id: cloud-fish
+ids: ⿰魚雲
+svg: cloud-fish.svg
+title: Cloud Fish
+pronunciation: yún
+bopomofo: ㄩㄣˊ
+meaning: Fish that swim through clouds; metaphorically, elusive dreams or unattainable
+  desires
+formation: associative
+definitions:
+- zh: 游於雲中之魚，傳說中飛躍雲霄之靈物
+  en: Fish that swim in clouds; legendary creatures that leap through the sky
+- zh: 比喻難以捕捉之事物，虛幻縹緲之願望
+  en: Metaphor for elusive things, ethereal and ungraspable desires
+- zh: 指高遠不可及之理想
+  en: Lofty and unattainable ideals
+etymology: In ancient cosmology, fish were earthbound creatures of water while clouds
+  belonged to the celestial realm. This character should have emerged to describe
+  the impossible union of these elements — creatures that transcend their nature to
+  swim in sky-streams. Such a character would have captured the Chinese literary imagination's
+  fascination with boundary-crossing and transformation.
+source:
+  work: 《說文解字》
+  gloss: ⿰魚雲，雲中游魚也。王問切。
+components:
+- char: 魚
+  meaning: fish
+- char: 雲
+  meaning: cloud
+examples:
+- text: 莊生夢中見⿰魚雲翱翔於九霄之上，醒來歎其不可得也。
+  translation: In Zhuangzi's dream, he saw cloud fish soaring above the nine heavens,
+    and upon waking, sighed that they were unattainable.
+  style: classical
+- text: 詩人常以⿰魚雲喻指那些美好卻虛無的理想。
+  translation: Poets often use cloud fish as a metaphor for beautiful yet insubstantial
+    ideals.
+  style: contemporary
+related:
+- char: 鯤
+  pinyin: kūn
+  gloss: legendary giant fish
+- char: 霓
+  pinyin: ní
+  gloss: rainbow, ethereal phenomena
+- char: 鸞
+  pinyin: luán
+  gloss: mythical bird
+tags:
+- mythology
+- transcendence
+- dreams
+- nature

@@ -38,8 +38,8 @@ body {{
   display: inline-block;
   width: 1.1em;
   height: 1.1em;
-  margin: 0 -0.05em;
-  vertical-align: -0.22em;
+  margin: 0 -0.02em;
+  vertical-align: -0.15em;
   color: currentColor;
 }}
 .test-line {{
@@ -47,6 +47,8 @@ body {{
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #eee;
 }}
+.size-2x {{ font-size: 2rem; }}
+.size-3x {{ font-size: 3rem; }}
 .label {{
   font-size: 0.7rem;
   color: #999;
@@ -67,18 +69,35 @@ _TEST_SENTENCES = [
         '{char}'
         '<span data-ref>測</span><span data-ref>試</span>文字。',
         "mid-sentence",
+        "",
     ),
     (
         '<span data-ref>國</span><span data-ref>際</span>'
         '{char}'
         '<span data-ref>體</span><span data-ref>驗</span>當中。',
         "dense context",
+        "",
     ),
     (
         '<span data-ref>人</span><span data-ref>大</span>'
         '{char}'
         '<span data-ref>上</span><span data-ref>下</span>方。',
         "sparse context",
+        "",
+    ),
+    (
+        '<span data-ref>試</span><span data-ref>文</span>'
+        '{char}'
+        '<span data-ref>測</span><span data-ref>試</span>文字。',
+        "2x size",
+        "size-2x",
+    ),
+    (
+        '<span data-ref>試</span><span data-ref>文</span>'
+        '{char}'
+        '<span data-ref>測</span><span data-ref>試</span>文字。',
+        "3x size",
+        "size-3x",
     ),
 ]
 
@@ -240,11 +259,11 @@ def _avg_stroke_width(img_bytes: bytes, bbox: dict) -> float:
 def _check_size(m: InlineMetrics) -> list[Issue]:
     issues = []
     for name, ratio in [("height", m.height_ratio), ("width", m.width_ratio)]:
-        if ratio < 0.80 or ratio > 1.20:
+        if ratio < 0.82 or ratio > 1.18:
             word = "small" if ratio < 1 else "large"
             issues.append(Issue("warning",
                 f"Character {name} {ratio:.2f}x vs reference — appears too {word}"))
-        elif ratio < 0.90 or ratio > 1.10:
+        elif ratio < 0.92 or ratio > 1.08:
             word = "small" if ratio < 1 else "large"
             issues.append(Issue("info",
                 f"Character {name} {ratio:.2f}x vs reference — slightly {word}"))
@@ -258,7 +277,7 @@ def _check_alignment(m: InlineMetrics) -> list[Issue]:
         direction = "low" if off > 0 else "high"
         issues.append(Issue("warning",
             f"Baseline offset {off:+.2f}em — character sits too {direction}"))
-    elif abs(off) > 0.08:
+    elif abs(off) > 0.07:
         direction = "low" if off > 0 else "high"
         issues.append(Issue("info",
             f"Baseline offset {off:+.2f}em — slightly {direction}"))
@@ -268,11 +287,11 @@ def _check_alignment(m: InlineMetrics) -> list[Issue]:
 def _check_density(m: InlineMetrics) -> list[Issue]:
     issues = []
     r = m.density_ratio
-    if r > 0 and (r < 0.5 or r > 2.0):
+    if r > 0 and (r < 0.4 or r > 1.8):
         word = "sparse" if r < 1 else "dense"
         issues.append(Issue("warning",
             f"Ink density {r:.2f}x vs reference — too {word}"))
-    elif r > 0 and (r < 0.7 or r > 1.5):
+    elif r > 0 and (r < 0.6 or r > 1.4):
         word = "sparse" if r < 1 else "dense"
         issues.append(Issue("info",
             f"Ink density {r:.2f}x vs reference — slightly {word}"))
@@ -282,11 +301,11 @@ def _check_density(m: InlineMetrics) -> list[Issue]:
 def _check_stroke_weight(m: InlineMetrics) -> list[Issue]:
     issues = []
     r = m.stroke_weight_ratio
-    if r > 0 and (r < 0.5 or r > 2.0):
+    if r > 0 and (r < 0.45 or r > 1.8):
         word = "thin" if r < 1 else "thick"
         issues.append(Issue("warning",
             f"Stroke weight {r:.2f}x vs reference — too {word}"))
-    elif r > 0 and (r < 0.7 or r > 1.5):
+    elif r > 0 and (r < 0.6 or r > 1.4):
         word = "thin" if r < 1 else "thick"
         issues.append(Issue("info",
             f"Stroke weight {r:.2f}x vs reference — slightly {word}"))
@@ -299,10 +318,11 @@ def _build_test_html(inline_svg: str, examples: list[dict] | None,
                      ids: str) -> str:
     """Build the full HTML page for one character."""
     blocks = []
-    for sentence_tpl, label in _TEST_SENTENCES:
+    for sentence_tpl, label, css_class in _TEST_SENTENCES:
         line_html = sentence_tpl.replace('{char}', inline_svg)
+        cls = f'test-line {css_class}' if css_class else 'test-line'
         blocks.append(
-            f'<div class="test-line">'
+            f'<div class="{cls}">'
             f'<div class="label">{label}</div>'
             f'{line_html}</div>'
         )

@@ -1,0 +1,52 @@
+id: thunder-heart
+ids: ⿱雷心
+svg: thunder-heart.svg
+title: Thunder Heart
+pronunciation: léi
+bopomofo: ㄌㄟˊ
+meaning: The sudden overwhelming emotion that strikes like thunder in one's heart.
+formation: phono-semantic
+definitions:
+- zh: 雷震於心，驚懼之狀
+  en: the state of being thunderstruck in one's heart; sudden shock or terror
+- zh: 情感激烈如雷鳴
+  en: emotions as intense and sudden as thunder
+- zh: 心靈深處之震撼
+  en: profound spiritual or emotional awakening
+etymology: In the space between surprise and understanding, there should have been
+  a character for that moment when thunder speaks directly to the heart. The ancients
+  knew that some emotions arrive not gradually but all at once, like summer storms
+  that transform the very air we breathe. This character would have captured those
+  instants when the heart becomes a resonating chamber for forces beyond our control.
+source:
+  work: 《說文解字》
+  gloss: ⿱雷心，雷震於心也。從雷從心，雷亦聲。盧對切。
+components:
+- char: 雷
+  meaning: 雷
+- char: 心
+  meaning: heart
+examples:
+- text: 聞君薨訊，⿱雷心不已，夜不能寐。
+  translation: Upon hearing news of your passing, my heart was thunderstruck, and
+    I could not sleep through the night.
+  style: classical
+- text: 初見此景，遊人無不⿱雷心，嘆造化之神奇。
+  translation: At first sight of this scenery, visitors are all struck with awe in
+    their hearts, marveling at nature's wonder.
+  style: contemporary
+related:
+- char: 驚
+  pinyin: jīng
+  gloss: to startle, be alarmed
+- char: 震
+  pinyin: zhèn
+  gloss: to shake,震動
+- char: 悸
+  pinyin: jì
+  gloss: heart palpitations
+tags:
+- emotions
+- weather
+- shock
+- heart
